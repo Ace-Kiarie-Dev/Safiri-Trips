@@ -110,9 +110,9 @@ export function StopsTab({ trip, stops, route, routeNote }: Props) {
         <View style={styles.add}>
           <EmptyState
             icon="pin"
-            title="No stops yet"
-            message="Add the places you want to visit and we will work out the drive."
-            actionLabel="Add a stop"
+            title="Where to?"
+            message="Add your destination first. Stops on the way come after."
+            actionLabel="Add your destination"
             onAction={addStop}
           />
         </View>
@@ -120,12 +120,23 @@ export function StopsTab({ trip, stops, route, routeNote }: Props) {
         stops.map((s, i) => (
           <View key={s.id}>
             <View style={[styles.stop, { backgroundColor: c.surface }]}>
-              <View style={[styles.badge, { backgroundColor: c.primary }]}>
-                <AppText variant="label" tone="onPrimary">
-                  {i + 1}
-                </AppText>
-              </View>
+              {i === stops.length - 1 ? (
+                <View style={[styles.badge, { backgroundColor: c.accent }]}>
+                  <Icon name="pin" size={16} color={c.ink} />
+                </View>
+              ) : (
+                <View style={[styles.badge, { backgroundColor: c.primary }]}>
+                  <AppText variant="label" tone="onPrimary">
+                    {i + 1}
+                  </AppText>
+                </View>
+              )}
               <View style={styles.text}>
+                {i === stops.length - 1 ? (
+                  <AppText variant="micro" tone="muted">
+                    DESTINATION
+                  </AppText>
+                ) : null}
                 <AppText
                   variant="title"
                   numberOfLines={1}
@@ -212,7 +223,7 @@ export function StopsTab({ trip, stops, route, routeNote }: Props) {
       {stops.length > 0 ? (
         <View style={styles.add}>
           {stops.length < MAX_STOPS ? (
-            <Button label="Add a stop" icon="plus" variant="outline" onPress={addStop} />
+            <Button label="Add a stop on the way" icon="plus" variant="outline" onPress={addStop} />
           ) : (
             <AppText variant="caption" tone="muted">
               This trip has reached the limit of {MAX_STOPS} stops.

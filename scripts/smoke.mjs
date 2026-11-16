@@ -11,14 +11,39 @@ if (!base) {
 const out = (s) => process.stdout.write(`${s}\n`);
 
 const CHECKS = [
-  { name: 'search ', path: '/api/search?q=naivasha', expect: (d) => d.results?.length > 0, show: (d) => d.results[0].name },
-  { name: 'weather', path: '/api/weather?lat=-0.77&lng=36.35', expect: (d) => d.days?.length === 7, show: (d) => `${d.days[0].maxC}C max, ${d.days[0].rainPct}% rain, AQI ${d.aqi ?? 'n/a'}` },
-  { name: 'nearby ', path: '/api/nearby?lat=-0.77&lng=36.35', expect: (d) => Array.isArray(d.places), show: (d) => `${d.places.length} places` },
-  { name: 'place  ', path: '/api/place?lat=-4.0626&lng=39.6797&name=Fort%20Jesus', expect: (d) => 'place' in d, show: (d) => d.place?.title ?? 'no match' },
+  {
+    name: 'search ',
+    path: '/api/search?q=naivasha',
+    expect: (d) => d.results?.length > 0,
+    show: (d) => d.results[0].name,
+  },
+  {
+    name: 'weather',
+    path: '/api/weather?lat=-0.77&lng=36.35',
+    expect: (d) => d.days?.length === 7,
+    show: (d) => `${d.days[0].maxC}C max, ${d.days[0].rainPct}% rain, AQI ${d.aqi ?? 'n/a'}`,
+  },
+  {
+    name: 'nearby ',
+    path: '/api/nearby?lat=-0.77&lng=36.35',
+    expect: (d) => Array.isArray(d.places),
+    show: (d) => `${d.places.length} places`,
+  },
+  {
+    name: 'place  ',
+    path: '/api/place?lat=-4.0626&lng=39.6797&name=Fort%20Jesus',
+    expect: (d) => 'place' in d,
+    show: (d) => d.place?.title ?? 'no match',
+  },
   {
     name: 'route  ',
     path: '/api/route',
-    body: { points: [{ lat: -1.2921, lng: 36.8219 }, { lat: -0.7167, lng: 36.4333 }] },
+    body: {
+      points: [
+        { lat: -1.2921, lng: 36.8219 },
+        { lat: -0.7167, lng: 36.4333 },
+      ],
+    },
     expect: (d) => d.distanceM > 0 && d.legs?.length > 0,
     show: (d) => `${Math.round(d.distanceM / 1000)} km, ${Math.round(d.durationS / 60)} min`,
   },
@@ -56,5 +81,9 @@ for (const check of CHECKS) {
   }
 }
 
-out(failed === 0 ? '\nAll five endpoints are working.\n' : `\n${failed} of ${CHECKS.length} failed. See above.\n`);
+out(
+  failed === 0
+    ? '\nAll five endpoints are working.\n'
+    : `\n${failed} of ${CHECKS.length} failed. See above.\n`,
+);
 process.exit(failed === 0 ? 0 : 1);

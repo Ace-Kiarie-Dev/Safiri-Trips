@@ -1,5 +1,5 @@
 import type { UseQueryResult } from '@tanstack/react-query';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { EmptyState } from '@/components/EmptyState';
@@ -7,14 +7,31 @@ import { ErrorState } from '@/components/ErrorState';
 import { Icon } from '@/components/Icon';
 import { Skeleton } from '@/components/Skeleton';
 import { clockTime, formatTemp, weekday } from '@/lib/format';
-import type { WeatherData } from '@/lib/schemas';
+import type { ForecastDay, WeatherData } from '@/lib/schemas';
 import type { Stop } from '@/lib/trips';
 import { describeAqi, describeWeather } from '@/lib/weatherCode';
 import { useSettings } from '@/state/settings';
-import { radius, space } from '@/theme/tokens';
-import { useColors } from '@/theme/useColors';
+import { radius, shadow, space } from '@/theme/tokens';
+import { useColors, type ColorTokens } from '@/theme/useColors';
 
 type Props = { stops: Stop[]; weather: UseQueryResult<WeatherData>[]; tripDates: Set<string> };
+
+const BAR_MAX = 40;
+
+function advice(d: ForecastDay): string {
+  const w = describeWeather(d.code).label;
+  if (d.rainPct >= 60) return `${w}. Pack a jacket.`;
+  if (d.uv >= 8) return `${w}, very high UV.`;
+  if (d.maxC >= 30) return `${w} and hot.`;
+  if (d.minC <= 10) return `${w}, cold start.`;
+  return w;
+}
+
+const wet = (d: ForecastDay) => d.rainPct >= 50 || describeWeather(d.code).icon === 'rain';
+
+function aqiTint(aqi: number, c: ColorTokens) {
+  return aqi <= 50 ? c.primarySoft : aqi <= 100 ? c.sunSoft : c.surfaceAlt;
+}
 
 export function WeatherTab({ stops, weather, tripDates }: Props) {
   const c = useColors();
@@ -34,92 +51,148 @@ export function WeatherTab({ stops, weather, tripDates }: Props) {
     <View style={styles.list}>
       {stops.map((s, i) => {
         const q = weather[i];
-        const today = q?.data?.days[0];
+        if (!q || q.isPending) {
+          return <Skeleton key={s.id} height={260} radius={radius.lg} />;
+        }
+        if (q.isError) {
+          return (
+            <ErrorState
+              key={s.id}
+              title={`No forecast for ${s.name}`}
+              message="We could not load the weather and nothing is saved for this stop."
+              onRetry={() => void q.refetch()}
+            />
+          );
+        }
+        const days = q.data.days;
+        const hero = days.find((d) => tripDates.has(d.date)) ?? days[0];
+        if (!hero) return null;
+        const heroWeather = describeWeather(hero.code);
+        const heroWet = wet(hero);
         return (
           <View key={s.id} style={[styles.card, { backgroundColor: c.surface }]}>
-            <AppText variant="title" numberOfLines={1}>
-              {s.name}
-            </AppText>
-            {!q || q.isPending ? (
-              <Skeleton height={96} style={styles.block} />
-            ) : q.isError ? (
-              <View style={styles.block}>
-                <ErrorState
-                  title="No forecast yet"
-                  message="We could not load the weather and nothing is saved for this stop."
-                  onRetry={() => void q.refetch()}
-                />
+            <View style={[styles.hero, { backgroundColor: heroWet ? c.skySoft : c.sunSoft }]}>
+              <View style={styles.heroText}>
+                <AppText variant="label" tone="muted" numberOfLines={1}>
+                  {s.name} · {weekday(hero.date)}
+                </AppText>
+                <AppText style={styles.temp}>{formatTemp(hero.maxC, units)}</AppText>
+                <AppText variant="title">{advice(hero)}</AppText>
+                <AppText variant="caption" tone="muted">
+                  Low {formatTemp(hero.minC, units)} · {hero.rainPct}% chance of rain
+                </AppText>
               </View>
-            ) : (
-              <>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.strip}
-                >
-                  {q.data.days.map((d) => {
-                    const w = describeWeather(d.code);
-                    const inTrip = tripDates.has(d.date);
-                    return (
+              <Icon name={heroWeather.icon} size={56} color={heroWet ? c.sky : c.gold} />
+            </View>
+
+            <View style={styles.strip}>
+              {days.map((d) => {
+                const w = describeWeather(d.code);
+                const inTrip = tripDates.has(d.date);
+                return (
+                  <View
+                    key={d.date}
+                    accessible
+                    accessibilityLabel={`${weekday(d.date)}, ${w.label}, high ${formatTemp(d.maxC, units)}, low ${formatTemp(d.minC, units)}, ${d.rainPct}% chance of rain`}
+                    style={[styles.day, inTrip && { backgroundColor: c.primarySoft }]}
+                  >
+                    <AppText variant="micro" tone="muted">
+                      {weekday(d.date)}
+                    </AppText>
+                    <Icon
+                      name={w.icon}
+                      size={20}
+                      color={
+                        w.icon === 'rain' || w.icon === 'storm'
+                          ? c.sky
+                          : w.icon === 'sun'
+                            ? c.gold
+                            : c.muted
+                      }
+                    />
+                    <AppText variant="label">{Math.round(d.maxC)}°</AppText>
+                    <AppText variant="micro" tone="muted">
+                      {Math.round(d.minC)}°
+                    </AppText>
+                    <View style={[styles.barTrack, { backgroundColor: c.skySoft }]}>
                       <View
-                        key={d.date}
-                        accessible
-                        accessibilityLabel={`${weekday(d.date)}, ${w.label}, high ${formatTemp(d.maxC, units)}, low ${formatTemp(d.minC, units)}, ${d.rainPct}% chance of rain`}
                         style={[
-                          styles.day,
+                          styles.barFill,
                           {
-                            backgroundColor: inTrip ? c.indicator : 'transparent',
-                            borderColor: c.line,
+                            height: Math.round((d.rainPct / 100) * BAR_MAX),
+                            backgroundColor: c.sky,
                           },
                         ]}
-                      >
-                        <AppText variant="micro" tone="muted">
-                          {weekday(d.date)}
-                        </AppText>
-                        <Icon name={w.icon} size={22} color={c.primary} />
-                        <AppText variant="label">{formatTemp(d.maxC, units)}</AppText>
-                        <AppText variant="caption" tone="muted">
-                          {formatTemp(d.minC, units)}
-                        </AppText>
-                        <AppText variant="micro" tone="muted">
-                          {d.rainPct}%
-                        </AppText>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
-                <AppText variant="caption" tone="muted">
-                  {today
-                    ? `Sunrise ${clockTime(today.sunrise)} · Sunset ${clockTime(today.sunset)}`
-                    : ''}
-                  {q.data.aqi !== null
-                    ? ` · Air quality ${q.data.aqi} (${describeAqi(q.data.aqi)})`
-                    : ''}
+                      />
+                    </View>
+                    <AppText variant="micro" style={{ color: c.sky }}>
+                      {d.rainPct}%
+                    </AppText>
+                  </View>
+                );
+              })}
+            </View>
+
+            <View style={styles.chips}>
+              {q.data.aqi !== null ? (
+                <View style={[styles.chip, { backgroundColor: aqiTint(q.data.aqi, c) }]}>
+                  <Icon name="wind" size={14} color={c.ink} />
+                  <AppText variant="micro">
+                    Air {q.data.aqi} · {describeAqi(q.data.aqi)}
+                  </AppText>
+                </View>
+              ) : null}
+              <View style={[styles.chip, { backgroundColor: c.sunSoft }]}>
+                <Icon name="sunrise" size={14} color={c.ink} />
+                <AppText variant="micro">
+                  {clockTime(hero.sunrise)} · {clockTime(hero.sunset)}
                 </AppText>
-              </>
-            )}
+              </View>
+            </View>
           </View>
         );
       })}
       <AppText variant="micro" tone="muted">
-        Shaded days fall inside your trip. Rain shown as chance per day. Weather data by
-        Open-Meteo.com.
+        Shaded days fall inside your trip. Bars show the chance of rain. Weather by Open-Meteo.com.
       </AppText>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  list: { gap: space.md },
-  card: { borderRadius: radius.md, padding: space.lg, gap: space.sm },
-  block: { marginTop: space.sm },
-  strip: { gap: space.sm, paddingVertical: space.xs },
-  day: {
-    width: 60,
+  list: { gap: space.lg },
+  card: { borderRadius: radius.lg, overflow: 'hidden', ...shadow.card },
+  hero: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: 2,
+    gap: space.md,
+    padding: space.lg,
+  },
+  heroText: { flex: 1, gap: 2 },
+  temp: { fontFamily: 'Fraunces_700Bold', fontSize: 44, lineHeight: 48 },
+  strip: { flexDirection: 'row', paddingHorizontal: space.xs, paddingTop: space.sm },
+  day: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 3,
     paddingVertical: space.sm,
     borderRadius: radius.sm,
-    borderWidth: 1,
+  },
+  barTrack: {
+    width: 16,
+    height: BAR_MAX,
+    borderRadius: 4,
+    justifyContent: 'flex-end',
+    overflow: 'hidden',
+  },
+  barFill: { width: '100%', borderRadius: 4 },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, padding: space.md },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    height: 30,
+    paddingHorizontal: space.md,
+    borderRadius: radius.pill,
   },
 });

@@ -26,7 +26,12 @@ export type IconName =
   | 'storm'
   | 'bell'
   | 'car'
-  | 'chevron';
+  | 'chevron'
+  | 'shuffle'
+  | 'home'
+  | 'clock'
+  | 'wind'
+  | 'sunrise';
 
 type Props = { name: IconName; size?: number; color: string };
 
@@ -161,6 +166,26 @@ function glyph(name: IconName) {
         <>
           <Path d="M5 16V11l2-5h10l2 5v5M3 16h18v3H3Z" />
           <Path d="M5 11h14" />
+        </>
+      );
+    case 'shuffle':
+      return <Path d="M16 3l4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16" />;
+    case 'home':
+      return <Path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1Z" />;
+    case 'clock':
+      return (
+        <>
+          <Circle cx={12} cy={12} r={9} />
+          <Path d="M12 7v5l3 2" />
+        </>
+      );
+    case 'wind':
+      return <Path d="M3 8h11a3 3 0 1 0-3-3M3 12h15a3 3 0 1 1-3 3M3 16h8a2 2 0 1 1-2 2" />;
+    case 'sunrise':
+      return (
+        <>
+          <Path d="M12 10V3M9 6l3-3 3 3M3 17h18M5 21h14" />
+          <Path d="M6 17a6 6 0 0 1 12 0" />
         </>
       );
   }

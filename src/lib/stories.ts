@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import raw from '../../assets/stories/kenya.json';
+import { STORY_IMAGES } from './storyImages';
 import type { IconName } from '@/components/Icon';
 
 export const CATEGORIES = [
@@ -49,3 +50,28 @@ export const categoryIcon: Record<CategoryId, IconName> = {
   heritage: 'bookmark',
   city: 'pin',
 };
+
+/** Bundled photo for a story, or null when none has been added yet. */
+export const getStoryImage = (slug: string | null | undefined): number | null =>
+  slug ? (STORY_IMAGES[slug] ?? null) : null;
+
+export const randomStory = (): Story => STORIES[Math.floor(Math.random() * STORIES.length)]!;
+
+/** A spread of places across categories for the Discover carousel. */
+export function featuredStories(count = 8): Story[] {
+  const byCat = new Map<CategoryId, Story[]>();
+  for (const s of STORIES) byCat.set(s.category, [...(byCat.get(s.category) ?? []), s]);
+  const out: Story[] = [];
+  for (let round = 0; out.length < count; round++) {
+    let added = false;
+    for (const cat of CATEGORIES) {
+      const s = byCat.get(cat.id)?.[round];
+      if (s && out.length < count) {
+        out.push(s);
+        added = true;
+      }
+    }
+    if (!added) break;
+  }
+  return out;
+}

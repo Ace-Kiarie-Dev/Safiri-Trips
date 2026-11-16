@@ -2,9 +2,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Linking, StyleSheet, View } from 'react-native';
+import { Alert, Linking, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
+import { Icon, type IconName } from '@/components/Icon';
 import { ListRow } from '@/components/ListRow';
 import { Screen } from '@/components/Screen';
 import { Segmented } from '@/components/Segmented';
@@ -13,7 +14,15 @@ import { PRIVACY_URL } from '@/lib/config';
 import { formatBytes, offlineStorageBytes } from '@/lib/offline';
 import { deleteAllData } from '@/lib/wipe';
 import { useSettings, type Units } from '@/state/settings';
-import { space } from '@/theme/tokens';
+import { radius, shadow, space } from '@/theme/tokens';
+import { useColors } from '@/theme/useColors';
+
+const LINKS: { icon: IconName; label: string; value: string; url: string }[] = [
+  { icon: 'compass', label: 'Website', value: 'nesturex.com', url: 'https://nesturex.com' },
+  { icon: 'share', label: 'Email', value: 'hello@nesturex.com', url: 'mailto:hello@nesturex.com' },
+  { icon: 'pin', label: 'Instagram', value: '@nesture_x', url: 'https://instagram.com/nesture_x' },
+  { icon: 'pin', label: 'X', value: '@Nesturex', url: 'https://x.com/Nesturex' },
+];
 
 const UNIT_OPTIONS = [
   { id: 'metric', label: 'km and °C' },
@@ -21,6 +30,7 @@ const UNIT_OPTIONS = [
 ] as const satisfies readonly { id: Units; label: string }[];
 
 export default function SettingsScreen() {
+  const c = useColors();
   const router = useRouter();
   const qc = useQueryClient();
   const units = useSettings((s) => s.units);
@@ -57,6 +67,55 @@ export default function SettingsScreen() {
 
   return (
     <Screen title="Settings" onBack={() => router.back()}>
+      <View style={[styles.about, { backgroundColor: c.surface }]}>
+        <View style={[styles.aboutHero, { backgroundColor: c.primary }]}>
+          <View style={[styles.aboutMark, { backgroundColor: c.gold }]}>
+            <Icon name="map" size={28} color={c.ink} />
+          </View>
+          <View>
+            <AppText variant="display" tone="onPrimary">
+              Safiri Trips
+            </AppText>
+            <AppText variant="caption" tone="onPrimary">
+              Version {Constants.expoConfig?.version ?? ''} · Made in Nairobi
+            </AppText>
+          </View>
+        </View>
+        <View style={styles.aboutBody}>
+          <AppText>
+            Safiri is Swahili for &quot;to travel&quot;. Safiri Trips is built by Nesture-X, a
+            Nairobi creative technology studio, as a free, ad free, offline first planner for Kenyan
+            road trips.
+          </AppText>
+          <AppText variant="caption" tone="muted">
+            Designed and built by Peter Kiarie Kamande. No account, no tracking. Your trips live on
+            this phone only. Safari njema!
+          </AppText>
+          <View style={styles.links}>
+            {LINKS.map((l) => (
+              <Pressable
+                key={l.label}
+                accessibilityRole="link"
+                accessibilityLabel={`${l.label}: ${l.value}`}
+                onPress={() => void Linking.openURL(l.url)}
+                android_ripple={{ color: c.line }}
+                style={[styles.link, { borderColor: c.line }]}
+              >
+                <Icon name={l.icon} size={18} color={c.primary} />
+                <View style={styles.linkText}>
+                  <AppText variant="micro" tone="muted">
+                    {l.label}
+                  </AppText>
+                  <AppText variant="label" numberOfLines={1}>
+                    {l.value}
+                  </AppText>
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      </View>
+
       <AppText variant="title" style={styles.heading}>
         Units
       </AppText>
@@ -105,15 +164,6 @@ export default function SettingsScreen() {
         subtitle="Opens nesturex.com"
         onPress={() => void Linking.openURL(PRIVACY_URL)}
       />
-      <View style={styles.about}>
-        <AppText variant="label">Safiri Trips {Constants.expoConfig?.version ?? ''}</AppText>
-        <AppText variant="caption" tone="muted">
-          Made in Nairobi by Nesture-X. Safiri is Swahili for &quot;to travel&quot;. Safari njema!
-        </AppText>
-        <AppText variant="caption" tone="muted">
-          No account, no ads, no tracking. Your trips live on this phone only.
-        </AppText>
-      </View>
     </Screen>
   );
 }
@@ -121,5 +171,32 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   heading: { marginTop: space.xl, marginBottom: space.sm },
   msg: { marginTop: space.md },
-  about: { marginTop: space.xl, gap: space.xs },
+  about: { borderRadius: radius.lg, overflow: 'hidden', ...shadow.card },
+  aboutHero: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    padding: space.xl,
+  },
+  aboutMark: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aboutBody: { padding: space.lg, gap: space.md },
+  links: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm + 2, marginTop: space.xs },
+  link: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm + 2,
+    minHeight: 52,
+    paddingHorizontal: space.md,
+    borderRadius: radius.md,
+    borderWidth: 1,
+  },
+  linkText: { flex: 1 },
 });

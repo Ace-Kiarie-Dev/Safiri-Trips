@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import * as Location from 'expo-location';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
@@ -13,21 +13,63 @@ import { SearchBar } from '@/components/SearchBar';
 import { Skeleton } from '@/components/Skeleton';
 import { useDebounced } from '@/hooks/useDebounced';
 import { useOnline } from '@/hooks/useOnline';
-import { useTripMutation } from '@/hooks/useTrips';
-import { searchPlaces } from '@/lib/queries';
-import { categoryIcon, STORIES } from '@/lib/stories';
+import { useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
+import { distanceToRoute } from '@/lib/geo';
+import { fetchRoute, searchPlaces } from '@/lib/queries';
+import { categoryIcon, STORIES, type Story } from '@/lib/stories';
+import { routePoints } from '@/lib/tripRoute';
 import { addStop, setTripOrigin, type NewStop } from '@/lib/trips';
+import { Icon } from '@/components/Icon';
+import { useColors } from '@/theme/useColors';
 import { space } from '@/theme/tokens';
+
+const ON_THE_WAY_KM = 15;
 
 /**
  * Search or pick a curated place. One tap adds it as a stop, or sets it as the
  * trip's start point when opened with purpose=origin. Curated places work offline.
+ * The first stop becomes the destination; later ones slot in before it, in
+ * route order when we know the route.
  */
 export default function AddStopScreen() {
+  const c = useColors();
   const router = useRouter();
   const online = useOnline();
   const { tripId, purpose } = useLocalSearchParams<{ tripId: string; purpose?: string }>();
   const forOrigin = purpose === 'origin';
+
+  const trip = useTrip(tripId);
+  const stopsQuery = useStops(tripId);
+  const stops = useMemo(() => stopsQuery.data ?? [], [stopsQuery.data]);
+  const points = useMemo(
+    () => (trip.data ? routePoints(trip.data, stops) : []),
+    [trip.data, stops],
+  );
+  const routeQuery = useQuery({
+    queryKey: ['route', points.map((p) => `${p.lat},${p.lng}`).join('|')],
+    queryFn: () => fetchRoute(points),
+    enabled: !forOrigin && points.length >= 2,
+  });
+  const line = routeQuery.data?.geometry ?? null;
+
+  /** Curated places near the route line, nearest to the start first. */
+  const onTheWay = useMemo(() => {
+    if (!line || forOrigin) return [];
+    const taken = new Set(stops.map((s) => s.storySlug));
+    return STORIES.filter((s) => !taken.has(s.slug))
+      .map((story) => ({ story, ...distanceToRoute(story, line) }))
+      .filter((x) => x.km <= ON_THE_WAY_KM)
+      .sort((a, b) => a.along - b.along);
+  }, [line, stops, forOrigin]);
+
+  /** Where a new stop goes: before the destination, ordered along the route if we can. */
+  const insertIndex = (story?: Story) => {
+    if (stops.length === 0) return undefined;
+    const intermediate = stops.slice(0, -1);
+    if (!story || !line) return intermediate.length;
+    const here = distanceToRoute(story, line).along;
+    return intermediate.filter((s) => distanceToRoute(s, line).along < here).length;
+  };
   const [query, setQuery] = useState('');
   const [locating, setLocating] = useState(false);
   const [note, setNote] = useState<string | null>(null);
@@ -39,11 +81,12 @@ export default function AddStopScreen() {
     queryFn: () => searchPlaces(term),
     enabled: searching,
   });
-  const save = useTripMutation(async (stop: NewStop) => {
+  const save = useTripMutation(async ({ stop, at }: { stop: NewStop; at?: number }) => {
     if (forOrigin) await setTripOrigin(tripId, { name: stop.name, lat: stop.lat, lng: stop.lng });
-    else await addStop(tripId, stop);
+    else await addStop(tripId, stop, at);
   });
-  const pick = (stop: NewStop) => save.mutate(stop, { onSuccess: () => router.back() });
+  const pick = (stop: NewStop, story?: Story) =>
+    save.mutate({ stop, at: insertIndex(story) }, { onSuccess: () => router.back() });
 
   const locateMe = async () => {
     setNote(null);
@@ -73,7 +116,10 @@ export default function AddStopScreen() {
   const curated = searching ? STORIES.filter((s) => s.name.toLowerCase().includes(lower)) : STORIES;
 
   return (
-    <Screen title={forOrigin ? 'Start point' : 'Add a stop'} onBack={() => router.back()}>
+    <Screen
+      title={forOrigin ? 'Start point' : stops.length === 0 ? 'Where to?' : 'Add a stop'}
+      onBack={() => router.back()}
+    >
       {forOrigin ? (
         <View style={styles.sectionBottom}>
           <ListRow
@@ -90,6 +136,44 @@ export default function AddStopScreen() {
         </View>
       ) : null}
       <SearchBar value={query} onChangeText={setQuery} />
+      {!searching && onTheWay.length > 0 ? (
+        <View style={styles.section}>
+          <View style={styles.headingRow}>
+            <Icon name="car" size={18} color={c.clay} />
+            <AppText variant="headline">On the way</AppText>
+          </View>
+          <AppText variant="caption" tone="muted">
+            Curated places within {ON_THE_WAY_KM} km of your route
+          </AppText>
+          {onTheWay.map(({ story, km }) => (
+            <ListRow
+              key={story.slug}
+              icon={categoryIcon[story.category]}
+              title={story.name}
+              subtitle={`${story.region} · ${km < 1 ? 'on the route' : `${Math.round(km)} km off route`}`}
+              onPress={() =>
+                pick(
+                  {
+                    name: story.name,
+                    subtitle: story.region,
+                    lat: story.lat,
+                    lng: story.lng,
+                    storySlug: story.slug,
+                  },
+                  story,
+                )
+              }
+            />
+          ))}
+        </View>
+      ) : null}
+      {!searching && !forOrigin && stops.length >= 1 && !line && points.length >= 2 ? (
+        <AppText variant="caption" tone="muted" style={styles.section}>
+          {routeQuery.isPending
+            ? 'Working out the route to suggest places on the way…'
+            : 'Could not load the route, so on-the-way suggestions are off for now.'}
+        </AppText>
+      ) : null}
       <View style={styles.section}>
         {searching ? (
           search.isPending ? (
@@ -150,6 +234,7 @@ export default function AddStopScreen() {
 
 const styles = StyleSheet.create({
   section: { marginTop: space.lg },
+  headingRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   sectionBottom: { marginBottom: space.lg },
   gap: { gap: space.sm },
 });

@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { cancelTripAlerts } from '@/lib/alerts';
+import { removeTripOffline } from '@/lib/offline';
 import * as trips from '@/lib/trips';
 
 export const tripKeys = {
@@ -22,5 +24,14 @@ export function useTripMutation<A, R>(fn: (arg: A) => Promise<R>) {
   return useMutation({
     mutationFn: fn,
     onSuccess: () => qc.invalidateQueries({ queryKey: tripKeys.all }),
+  });
+}
+
+/** Deletes a trip and everything attached to it: alerts, offline pack, stops, packing list. */
+export function useDeleteTrip() {
+  return useTripMutation(async (id: string) => {
+    await cancelTripAlerts(id);
+    await removeTripOffline(id).catch(() => undefined);
+    await trips.deleteTrip(id);
   });
 }

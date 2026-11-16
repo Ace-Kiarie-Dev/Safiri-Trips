@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { Screen } from '@/components/Screen';
+import { STORIES } from '@/lib/stories';
 import { radius, space } from '@/theme/tokens';
 import { useColors } from '@/theme/useColors';
 
@@ -54,6 +55,19 @@ export default function AttributionsScreen() {
         projects.
       </AppText>
       <View style={styles.list}>
+        {STORIES.some((s) => s.imageCredit) ? (
+          <View style={[styles.card, { backgroundColor: c.surface }]}>
+            <AppText variant="title">Photos</AppText>
+            <AppText variant="label" tone="muted">
+              Place photos come from Wikimedia Commons under the licence listed with each.
+            </AppText>
+            {STORIES.filter((s) => s.imageCredit).map((s) => (
+              <AppText key={s.slug} variant="caption">
+                {s.name}: {s.imageCredit}
+              </AppText>
+            ))}
+          </View>
+        ) : null}
         {CREDITS.map((credit) => (
           <View key={credit.name} style={[styles.card, { backgroundColor: c.surface }]}>
             <AppText variant="title">{credit.name}</AppText>

@@ -12,6 +12,8 @@ export type Trip = {
   createdAt: number;
   offlineAt: number | null;
   stopCount: number;
+  /** Story slug of the last curated stop, used as the trip's cover photo. */
+  coverSlug: string | null;
 };
 
 export type Stop = {
@@ -41,6 +43,7 @@ type TripRow = {
   created_at: number;
   offline_at: number | null;
   stop_count: number;
+  cover_slug: string | null;
 };
 type StopRow = {
   id: string;
@@ -75,6 +78,7 @@ const toTrip = (r: TripRow): Trip => ({
   createdAt: r.created_at,
   offlineAt: r.offline_at,
   stopCount: r.stop_count,
+  coverSlug: r.cover_slug,
 });
 const toStop = (r: StopRow): Stop => ({
   id: r.id,
@@ -89,7 +93,10 @@ const toStop = (r: StopRow): Stop => ({
 
 const TRIP_SELECT = `SELECT t.id, t.title, t.start_date, t.days, t.origin_name, t.origin_lat,
   t.origin_lng, t.round_trip, t.created_at, t.offline_at,
-  (SELECT COUNT(*) FROM stops s WHERE s.trip_id = t.id) AS stop_count FROM trips t`;
+  (SELECT COUNT(*) FROM stops s WHERE s.trip_id = t.id) AS stop_count,
+  (SELECT story_slug FROM stops s WHERE s.trip_id = t.id AND story_slug IS NOT NULL
+     ORDER BY position DESC LIMIT 1) AS cover_slug
+  FROM trips t`;
 
 export async function listTrips(): Promise<Trip[]> {
   const db = await getDb();
@@ -181,25 +188,32 @@ export async function setAlertIds(id: string, ids: string[]) {
   await db.runAsync('UPDATE trips SET alert_ids = ? WHERE id = ?', JSON.stringify(ids), id);
 }
 
-/** Returns false when the trip is already at the stop limit. */
-export async function addStop(tripId: string, stop: NewStop): Promise<boolean> {
+/**
+ * Adds a stop. With no position it goes on the end. With a position it is
+ * inserted there and later stops shift down, which is how "on the way" stops
+ * land before the destination. Returns false at the stop limit.
+ */
+export async function addStop(tripId: string, stop: NewStop, position?: number): Promise<boolean> {
   const db = await getDb();
-  const row = await db.getFirstAsync<{ n: number; next: number }>(
-    'SELECT COUNT(*) AS n, COALESCE(MAX(position), -1) + 1 AS next FROM stops WHERE trip_id = ?',
-    tripId,
-  );
-  if ((row?.n ?? 0) >= MAX_STOPS) return false;
+  const existing = (await listStops(tripId)).map((s) => s.id);
+  if (existing.length >= MAX_STOPS) return false;
+  const id = newId();
   await db.runAsync(
     'INSERT INTO stops (id, trip_id, position, name, subtitle, lat, lng, story_slug) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    newId(),
+    id,
     tripId,
-    row?.next ?? 0,
+    existing.length,
     stop.name.slice(0, 80),
     stop.subtitle.slice(0, 120),
     stop.lat,
     stop.lng,
     stop.storySlug ?? null,
   );
+  if (position !== undefined && position < existing.length) {
+    const ordered = [...existing];
+    ordered.splice(Math.max(0, position), 0, id);
+    await renumber(tripId, ordered);
+  }
   return true;
 }
 

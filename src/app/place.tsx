@@ -1,19 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
-import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Linking, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
-import { Icon } from '@/components/Icon';
 import { ListRow } from '@/components/ListRow';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/Skeleton';
+import { StoryPhoto } from '@/components/StoryPhoto';
 import { formatTemp } from '@/lib/format';
 import { parsePlaceParams, toPlaceParams } from '@/lib/placeParams';
 import { fetchNearby, fetchWeather, fetchWikiPlace } from '@/lib/queries';
-import { categoryIcon, categoryLabel, getStory } from '@/lib/stories';
+import { categoryLabel, getStory } from '@/lib/stories';
 import { describeWeather } from '@/lib/weatherCode';
 import { useSettings } from '@/state/settings';
 import { radius, space } from '@/theme/tokens';
@@ -62,20 +61,20 @@ export default function PlaceScreen() {
 
   return (
     <Screen title={place.name} onBack={() => router.back()}>
-      <View style={[styles.hero, { backgroundColor: c.primary }]}>
-        {image ? (
-          <Image
-            source={{ uri: image }}
-            style={StyleSheet.absoluteFill}
-            contentFit="cover"
-            transition={200}
-            accessibilityLabel={`Photo of ${place.name}`}
-          />
-        ) : (
-          <Icon name={story ? categoryIcon[story.category] : 'pin'} size={56} color={c.gold} />
-        )}
+      <View style={styles.hero}>
+        <StoryPhoto
+          slug={story?.slug}
+          category={story?.category}
+          uri={image}
+          label={place.name}
+          iconSize={56}
+        />
       </View>
-      {image ? (
+      {story?.imageCredit ? (
+        <AppText variant="micro" tone="muted" style={styles.credit}>
+          {story.imageCredit}
+        </AppText>
+      ) : image ? (
         <AppText variant="micro" tone="muted" style={styles.credit}>
           Photo via Wikipedia. See the article for author and licence.
         </AppText>

@@ -15,44 +15,57 @@ export type ColorTokens = {
   muted: string;
   indicator: string;
   danger: string;
+  /** Cool counterpoint to the warm palette: weather, water, distance. */
+  sky: string;
+  skySoft: string;
+  sunSoft: string;
+  primarySoft: string;
 };
 
 export const lightColors: ColorTokens = {
-  bg: '#F4E9D8',
-  surface: '#FBF6EC',
-  surfaceAlt: '#F4E9D8',
-  line: '#E7DFD0',
-  handle: '#CBBFA8',
-  mapLand: '#EADFC8',
-  primary: '#2F4A3A',
-  onPrimary: '#F4E9D8',
-  accent: '#E2792B',
-  onAccent: '#1E1B16',
-  gold: '#D9A441',
-  clay: '#8B4A2B',
-  ink: '#1E1B16',
-  muted: '#5C5448',
-  indicator: '#DCE3D0',
-  danger: '#8B4A2B',
+  bg: '#FFF7EA',
+  surface: '#FFFFFF',
+  surfaceAlt: '#FFF1DC',
+  line: '#EADFCB',
+  handle: '#CDBFA6',
+  mapLand: '#EFE4CF',
+  primary: '#1E4D3A',
+  onPrimary: '#FFFFFF',
+  accent: '#F07A1E',
+  onAccent: '#1B1711',
+  gold: '#F2B544',
+  clay: '#9C4A22',
+  ink: '#1B1711',
+  muted: '#6B6054',
+  indicator: '#DCEBE2',
+  danger: '#9C4A22',
+  sky: '#2B7DBF',
+  skySoft: '#E3F0FA',
+  sunSoft: '#FFF0C9',
+  primarySoft: '#DCEBE2',
 };
 
 export const darkColors: ColorTokens = {
-  bg: '#17140F',
-  surface: '#211D17',
-  surfaceAlt: '#2C2720',
-  line: '#3A342B',
-  handle: '#5C5448',
-  mapLand: '#1D1A14',
-  primary: '#9CC2A9',
-  onPrimary: '#17140F',
-  accent: '#E2792B',
-  onAccent: '#1E1B16',
-  gold: '#D9A441',
-  clay: '#E0A07F',
-  ink: '#F4E9D8',
-  muted: '#B9AE9B',
-  indicator: '#33402F',
-  danger: '#E0A07F',
+  bg: '#15120E',
+  surface: '#211C16',
+  surfaceAlt: '#2C261E',
+  line: '#3B342A',
+  handle: '#5E5547',
+  mapLand: '#1C1813',
+  primary: '#9ED0B3',
+  onPrimary: '#15120E',
+  accent: '#F58A33',
+  onAccent: '#1B1711',
+  gold: '#F2B544',
+  clay: '#E6A784',
+  ink: '#FFF7EA',
+  muted: '#BBB09D',
+  indicator: '#2E4237',
+  danger: '#E6A784',
+  sky: '#7FB8E8',
+  skySoft: '#1E3041',
+  sunSoft: '#3D3317',
+  primarySoft: '#2E4237',
 };
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24 } as const;

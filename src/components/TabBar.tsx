@@ -9,7 +9,7 @@ import { Icon, type IconName } from './Icon';
 
 type BottomTabBarProps = Parameters<NonNullable<ComponentProps<typeof Tabs>['tabBar']>>[0];
 
-const ICONS: Record<string, IconName> = { index: 'map', trips: 'trips', discover: 'compass' };
+const ICONS: Record<string, IconName> = { discover: 'compass', index: 'map', trips: 'trips' };
 
 export function TabBar({ state, descriptors, navigateToTab, insets }: BottomTabBarProps) {
   const c = useColors();

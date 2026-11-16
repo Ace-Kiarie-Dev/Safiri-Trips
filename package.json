@@ -41,7 +41,8 @@
     "eslint": "^9.39.5",
     "eslint-config-expo": "^58.0.4",
     "prettier": "^3.10.1",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "sharp": "^0.34.3"
   },
   "scripts": {
     "start": "expo start --dev-client",
@@ -49,7 +50,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "photos": "node scripts/fetch-photos.mjs"
   },
   "private": true
 }

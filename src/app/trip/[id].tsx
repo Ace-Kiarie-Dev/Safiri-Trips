@@ -3,13 +3,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 
-import { AppText } from '@/components/AppText';
-import { Chip } from '@/components/Chip';
 import { EmptyState } from '@/components/EmptyState';
 import { IconButton } from '@/components/IconButton';
 import { Screen } from '@/components/Screen';
 import { Segmented } from '@/components/Segmented';
 import { Skeleton } from '@/components/Skeleton';
+import { StatPill } from '@/components/StatPill';
 import { PackingTab } from '@/features/trip/PackingTab';
 import { StopsTab } from '@/features/trip/StopsTab';
 import { TripActions } from '@/features/trip/TripActions';
@@ -17,16 +16,14 @@ import { TripForm } from '@/features/trip/TripForm';
 import { TripMap } from '@/features/trip/TripMap';
 import { WeatherTab } from '@/features/trip/WeatherTab';
 import { useOnline } from '@/hooks/useOnline';
-import { useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
-import { cancelTripAlerts } from '@/lib/alerts';
+import { useDeleteTrip, useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
 import { formatDay, formatDistance, formatDuration } from '@/lib/format';
-import { removeTripOffline } from '@/lib/offline';
 import { generatePacking } from '@/lib/packing';
 import { fetchRoute, fetchWeather } from '@/lib/queries';
 import { shareTrip, tripAsText } from '@/lib/share';
 import { getStory } from '@/lib/stories';
 import { routePoints } from '@/lib/tripRoute';
-import { deleteTrip, updateTrip, type TripInput } from '@/lib/trips';
+import { updateTrip, type TripInput } from '@/lib/trips';
 import { tripWindow } from '@/lib/tripWeather';
 import { useSettings } from '@/state/settings';
 import { space } from '@/theme/tokens';
@@ -69,11 +66,7 @@ export default function TripDetailScreen() {
   });
 
   const save = useTripMutation((input: TripInput) => updateTrip(id, input));
-  const remove = useTripMutation(async () => {
-    await cancelTripAlerts(id);
-    await removeTripOffline(id).catch(() => undefined);
-    await deleteTrip(id);
-  });
+  const remove = useDeleteTrip();
 
   const data = trip.data;
   const forecasts = useMemo(
@@ -156,7 +149,7 @@ export default function TripDetailScreen() {
       {
         text: 'Delete',
         style: 'destructive',
-        onPress: () => remove.mutate(undefined, { onSuccess: () => router.replace('/trips') }),
+        onPress: () => remove.mutate(id, { onSuccess: () => router.replace('/trips') }),
       },
     ]);
 
@@ -190,15 +183,26 @@ export default function TripDetailScreen() {
     >
       <TripMap trip={data} stops={stops} route={route} />
       <View style={styles.summary}>
-        <AppText variant="label" tone="muted" style={styles.flex}>
-          {data.startDate ? `${formatDay(data.startDate)} · ` : ''}
-          {data.days} {data.days === 1 ? 'day' : 'days'} · {stops.length}{' '}
-          {stops.length === 1 ? 'stop' : 'stops'}
-          {route
-            ? ` · ${formatDistance(route.distanceM, units)} · ${formatDuration(route.durationS)}`
-            : ''}
-        </AppText>
-        {data.offlineAt ? <Chip label="Offline" filled /> : null}
+        <StatPill
+          icon="car"
+          value={route ? formatDistance(route.distanceM, units) : '—'}
+          label="Distance"
+        />
+        <StatPill
+          icon="clock"
+          value={route ? formatDuration(route.durationS) : '—'}
+          label="Drive time"
+        />
+        <StatPill
+          icon="trips"
+          value={`${data.days} ${data.days === 1 ? 'day' : 'days'}`}
+          label={data.startDate ? formatDay(data.startDate) : 'No dates yet'}
+        />
+        <StatPill
+          icon="pin"
+          value={`${stops.length} ${stops.length === 1 ? 'stop' : 'stops'}`}
+          label={data.offlineAt ? 'Saved offline' : 'Places'}
+        />
       </View>
       <Segmented options={TABS} value={tab} onChange={setTab} />
       <View style={styles.tab}>
@@ -228,8 +232,8 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   summary: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.sm,
+    flexWrap: 'wrap',
+    gap: space.sm + 2,
     marginVertical: space.md,
   },
   tab: { marginTop: space.lg },
