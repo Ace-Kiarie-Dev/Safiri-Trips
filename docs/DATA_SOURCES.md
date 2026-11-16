@@ -5,7 +5,7 @@
 | Search | Nominatim | proxy `/api/search` | Limited to Kenya. App debounces typing, proxy edge caches for a day and sends a real User-Agent. Policy is 1 request per second, so add the Vercel Firewall rule before launch. |
 | Routing | OpenRouteService | proxy `/api/route` | Needs `ORS_API_KEY` on Vercel. Up to 12 stops. |
 | Weather, air quality | Open-Meteo | proxy `/api/weather` | Free tier is non-commercial. Keep v1 ad free. Move to a paid plan before adding AdMob in v1.1. |
-| Nearby | Overpass | proxy `/api/nearby` | Small radius query, capped at 40 results, cached for a day. |
+| Nearby | Overpass, Wikipedia geosearch fallback | proxy `/api/nearby` | Small radius query, capped at 40 results, cached for a day. The public Overpass instances are often at capacity and say so in their error, so when both mirrors fail the proxy answers with nearby Wikipedia articles instead (cached one hour so Overpass is retried later). The response carries `source: "osm"` or `"wikipedia"`. |
 | Place summaries | Wikipedia REST | proxy `/api/place` | Text CC BY-SA, credited in app. |
 | Map tiles | OpenFreeMap (Liberty style) | app, direct | No key. Attribution is shown on the map by MapLibre and in Attributions. |
 
