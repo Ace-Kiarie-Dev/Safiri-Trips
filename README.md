@@ -2,11 +2,15 @@
 
 Offline first Kenya trip planner for Android. Package: `com.nesture.safiritrips`. Expo SDK 58, React Native, TypeScript strict, Expo Router.
 
-## Run (Windows, Android dev build)
+## Run (Android dev build via EAS, no Android Studio needed)
 0. Deploy the proxy (see `proxy/README.md`), then copy `.env.example` to `.env` and set `EXPO_PUBLIC_API_BASE_URL`
 1. `npm install`
-2. `npx expo run:android` (needs Android Studio SDK and a device or emulator; MapLibre needs a dev build, not Expo Go)
-3. `npm run start` for the dev server afterwards
+2. Once: `npx eas-cli build -p android --profile development`, then install the APK it gives you on the phone
+3. Every session after that: `npm run start`, open Safiri Trips on the phone, it loads the JS from your PC over Wi-Fi
+4. Rebuild (step 2) only when a native dependency or `app.json` changes
+
+MapLibre is a native module, so Expo Go cannot run this app. The three EAS profiles are `development` (dev client APK),
+`preview` (standalone APK for testers) and `production` (AAB for Play).
 
 ## Checks before every commit
 `npm run typecheck && npm run lint`
