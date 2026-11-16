@@ -9,7 +9,7 @@ const ALLOWED_HOSTS = new Set([
   "api.open-meteo.com",
   "air-quality-api.open-meteo.com",
   "overpass-api.de",
-  "overpass.kumi.systems",
+  "overpass.private.coffee",
   "en.wikipedia.org",
 ]);
 

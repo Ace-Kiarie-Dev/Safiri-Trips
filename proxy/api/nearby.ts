@@ -34,9 +34,10 @@ const FILTERS = [
   '["natural"~"^(peak|beach|waterfall|hot_spring)$"]',
 ];
 
-// The public instance queues requests at busy times, so try the faster mirror first.
+// The public instance queues requests at busy times, so try the private.coffee
+// mirror (formerly kumi.systems) first. Nearby is best effort either way.
 const MIRRORS = [
-  "https://overpass.kumi.systems/api/interpreter",
+  "https://overpass.private.coffee/api/interpreter",
   "https://overpass-api.de/api/interpreter",
 ];
 
