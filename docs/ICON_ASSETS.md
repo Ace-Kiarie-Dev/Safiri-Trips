@@ -42,3 +42,6 @@ The exact logo (pin plus "Safiri Trips") on a transparent background, tightly cr
 - Asset 2: toggle a circle mask over it, nothing touches the edge.
 - Asset 3: only black and transparent, nothing else.
 - Spelling on the feature graphic: SAFIRI with an i, TRIPS.
+
+## Status (16 Nov 2026)
+Done. Final art lives in assets/ (icon, adaptive foreground, background, monochrome, splash) and store/ (Play icon 512, feature graphic 1024x500). Brand colours come from assets/branding/mark-transparent.png (pin #2A4337, sun #E37326), which match the app tokens closely, so tokens are unchanged. Raw ChatGPT images sit in assets/branding/source/ (not committed). Two rejected: the glowing dark variant and the transparent lockup with speckle noise.

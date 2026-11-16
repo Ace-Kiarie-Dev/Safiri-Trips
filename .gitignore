@@ -15,3 +15,6 @@ ios/
 !.env.example
 .DS_Store
 npm-debug.*
+
+# raw AI source images, kept on disk only
+assets/branding/source/
