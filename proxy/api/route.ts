@@ -34,7 +34,12 @@ export const POST = guarded(
       await upstream("https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson", {
         method: "POST",
         body,
-        headers: { Authorization: key, "Content-Type": "application/json" },
+        // The geojson endpoint answers with application/geo+json, so ask for it.
+        headers: {
+          Authorization: key,
+          "Content-Type": "application/json",
+          Accept: "application/geo+json, application/json",
+        },
       }),
     );
     const f = data.features[0];

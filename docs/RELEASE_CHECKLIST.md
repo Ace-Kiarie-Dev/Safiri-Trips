@@ -24,7 +24,7 @@ Status key: [x] done in code, [ ] needs Peter or a real device.
 - [x] External links limited to the fixed privacy URL and Wikipedia URLs checked against an `https://en.wikipedia.org/` prefix
 - [x] Delete all my data wipes SQLite, caches, offline maps and scheduled notifications
 - [ ] Add a Vercel Firewall rate limit rule for `/api/*` (the in-code limiter is per instance and best effort)
-- [ ] Remove the `PROXY_DEBUG` environment variable from Vercel (it returns upstream error detail to clients)
+- [ ] Remove the temporary upstream error `detail` from proxy responses in `proxy/lib/http.ts` (marked TEMPORARY), and delete the `PROXY_DEBUG` variable from Vercel if it was added
 - [ ] `npm audit` in the root and in `proxy/` right before release
 - [ ] Secret scan before every push (for example `gitleaks detect`)
 - [ ] Confirm the release manifest with `aapt dump permissions` on the built AAB
