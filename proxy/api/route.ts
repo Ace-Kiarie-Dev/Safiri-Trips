@@ -8,6 +8,8 @@ const schema = z.object({
     .max(12),
 });
 
+export const maxDuration = 30;
+
 const ors = z.object({
   features: z.array(
     z.object({

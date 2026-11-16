@@ -15,6 +15,8 @@ const overpass = z.object({
   ),
 });
 
+export const maxDuration = 30;
+
 const KINDS = ["tourism", "amenity", "historic", "natural", "leisure"] as const;
 
 export const GET = guarded(schema, async ({ lat, lng, radius }) => {
@@ -26,7 +28,9 @@ export const GET = guarded(schema, async ({ lat, lng, radius }) => {
       method: "POST",
       body: new URLSearchParams({ data: q }).toString(),
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    }),
+    },
+    25_000,
+    ),
   );
   const places = data.elements.flatMap((e) => {
     const t = e.tags ?? {};

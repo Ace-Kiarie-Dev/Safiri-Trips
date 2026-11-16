@@ -65,21 +65,33 @@ export function guarded<S extends z.ZodType>(
       const parsed = schema.safeParse(raw);
       if (!parsed.success) return fail(400, "Invalid request");
       return await handler(parsed.data, request);
-    } catch {
+    } catch (e) {
+      // Server side only, never returned to the client. Path and message only,
+      // no query text and no coordinates.
+      console.error(
+        `${new URL(request.url).pathname} ${e instanceof Error ? e.message : "unknown error"}`,
+      );
       return fail(502, "Upstream unavailable");
     }
   };
 }
 
-export async function upstream(url: string, init: RequestInit = {}): Promise<unknown> {
+export async function upstream(
+  url: string,
+  init: RequestInit = {},
+  timeoutMs = 15_000,
+): Promise<unknown> {
   const host = new URL(url).hostname;
   if (!ALLOWED_HOSTS.has(host)) throw new Error("host not allowed");
   const res = await fetch(url, {
     ...init,
     headers: { "User-Agent": USER_AGENT, Accept: "application/json", ...init.headers },
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.timeout(timeoutMs),
   });
-  if (!res.ok) throw new Error(`upstream ${res.status}`);
+  if (!res.ok) {
+    const detail = (await res.text().catch(() => "")).slice(0, 200).replace(/\s+/g, " ");
+    throw new Error(`upstream ${host} ${res.status} ${detail}`);
+  }
   return res.json();
 }
 
