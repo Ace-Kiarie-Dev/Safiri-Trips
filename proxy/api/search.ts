@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { guarded, json, lat, lng, upstream } from "../lib/http";
+import { guarded, json, lat, lng, upstream } from "../lib/http.js";
 
 const schema = z.object({
   q: z.string().trim().min(2).max(80),

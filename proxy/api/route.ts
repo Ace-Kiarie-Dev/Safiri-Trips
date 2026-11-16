@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { fail, guarded, json, lat, lng, upstream } from "../lib/http";
+import { fail, guarded, json, lat, lng, upstream } from "../lib/http.js";
 
 const schema = z.object({
   points: z
