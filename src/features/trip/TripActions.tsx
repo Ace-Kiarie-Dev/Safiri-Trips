@@ -8,6 +8,7 @@ import { tripKeys } from '@/hooks/useTrips';
 import { cancelTripAlerts, hasTripAlerts, scheduleTripAlerts } from '@/lib/alerts';
 import { formatBytes, planPack, removeTripOffline, saveTripOffline } from '@/lib/offline';
 import type { ForecastDay, RouteData } from '@/lib/schemas';
+import { routePoints } from '@/lib/tripRoute';
 import type { Stop, Trip } from '@/lib/trips';
 import { space } from '@/theme/tokens';
 
@@ -29,7 +30,8 @@ export function TripActions({ trip, stops, route, forecasts, online }: Props) {
   const refreshTrips = () => qc.invalidateQueries({ queryKey: tripKeys.all });
 
   const download = () => {
-    const points: [number, number][] = route?.geometry ?? stops.map((s) => [s.lng, s.lat]);
+    const points: [number, number][] =
+      route?.geometry ?? routePoints(trip, stops).map((p) => [p.lng, p.lat]);
     const plan = planPack(points);
     Alert.alert(
       'Save trip offline?',
@@ -73,7 +75,7 @@ export function TripActions({ trip, stops, route, forecasts, online }: Props) {
     void qc.invalidateQueries({ queryKey: alertsKey });
   };
 
-  if (stops.length === 0) return null;
+  if (stops.length === 0 && !trip.origin) return null;
 
   return (
     <View style={styles.wrap}>

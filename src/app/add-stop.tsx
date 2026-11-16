@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import * as Location from 'expo-location';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -15,15 +16,21 @@ import { useOnline } from '@/hooks/useOnline';
 import { useTripMutation } from '@/hooks/useTrips';
 import { searchPlaces } from '@/lib/queries';
 import { categoryIcon, STORIES } from '@/lib/stories';
-import { addStop, type NewStop } from '@/lib/trips';
+import { addStop, setTripOrigin, type NewStop } from '@/lib/trips';
 import { space } from '@/theme/tokens';
 
-/** Search or pick a curated place, one tap adds it to the trip. Works offline with the curated list. */
+/**
+ * Search or pick a curated place. One tap adds it as a stop, or sets it as the
+ * trip's start point when opened with purpose=origin. Curated places work offline.
+ */
 export default function AddStopScreen() {
   const router = useRouter();
   const online = useOnline();
-  const { tripId } = useLocalSearchParams<{ tripId: string }>();
+  const { tripId, purpose } = useLocalSearchParams<{ tripId: string; purpose?: string }>();
+  const forOrigin = purpose === 'origin';
   const [query, setQuery] = useState('');
+  const [locating, setLocating] = useState(false);
+  const [note, setNote] = useState<string | null>(null);
   const term = useDebounced(query.trim(), 450);
   const searching = term.length >= 2;
 
@@ -32,14 +39,56 @@ export default function AddStopScreen() {
     queryFn: () => searchPlaces(term),
     enabled: searching,
   });
-  const add = useTripMutation((stop: NewStop) => addStop(tripId, stop));
-  const pick = (stop: NewStop) => add.mutate(stop, { onSuccess: () => router.back() });
+  const save = useTripMutation(async (stop: NewStop) => {
+    if (forOrigin) await setTripOrigin(tripId, { name: stop.name, lat: stop.lat, lng: stop.lng });
+    else await addStop(tripId, stop);
+  });
+  const pick = (stop: NewStop) => save.mutate(stop, { onSuccess: () => router.back() });
+
+  const locateMe = async () => {
+    setNote(null);
+    setLocating(true);
+    try {
+      const { granted } = await Location.requestForegroundPermissionsAsync();
+      if (!granted) {
+        setNote('Location is off. Search for your starting place instead.');
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      const { latitude: lat, longitude: lng } = pos.coords;
+      const [place] = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng }).catch(
+        () => [],
+      );
+      const name =
+        [place?.name, place?.city ?? place?.subregion].filter(Boolean).join(', ') || 'My location';
+      pick({ name, subtitle: '', lat, lng });
+    } catch {
+      setNote('Could not get your location just now.');
+    } finally {
+      setLocating(false);
+    }
+  };
 
   const lower = term.toLowerCase();
   const curated = searching ? STORIES.filter((s) => s.name.toLowerCase().includes(lower)) : STORIES;
 
   return (
-    <Screen title="Add a stop" onBack={() => router.back()}>
+    <Screen title={forOrigin ? 'Start point' : 'Add a stop'} onBack={() => router.back()}>
+      {forOrigin ? (
+        <View style={styles.sectionBottom}>
+          <ListRow
+            icon="locate"
+            title={locating ? 'Finding you…' : 'Use my location'}
+            subtitle="Asks for location once, only while the app is open"
+            onPress={locating ? undefined : () => void locateMe()}
+          />
+          {note ? (
+            <AppText variant="caption" tone="danger" accessibilityRole="alert">
+              {note}
+            </AppText>
+          ) : null}
+        </View>
+      ) : null}
       <SearchBar value={query} onChangeText={setQuery} />
       <View style={styles.section}>
         {searching ? (
@@ -51,7 +100,7 @@ export default function AddStopScreen() {
           ) : search.isError ? (
             <ErrorState
               title={online ? 'Search hit a bump' : 'You are offline'}
-              message="You can still add any of the curated places below."
+              message="You can still pick any of the curated places below."
               onRetry={() => void search.refetch()}
             />
           ) : search.data.length === 0 && curated.length === 0 ? (
@@ -101,5 +150,6 @@ export default function AddStopScreen() {
 
 const styles = StyleSheet.create({
   section: { marginTop: space.lg },
+  sectionBottom: { marginBottom: space.lg },
   gap: { gap: space.sm },
 });

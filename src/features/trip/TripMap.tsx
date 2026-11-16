@@ -13,22 +13,23 @@ import { StyleSheet, View } from 'react-native';
 import { MapPin } from '@/components/MapPin';
 import { KENYA_CENTER, KENYA_ZOOM, MAP_STYLE_URL } from '@/lib/config';
 import type { RouteData } from '@/lib/schemas';
-import type { Stop } from '@/lib/trips';
+import { routePoints } from '@/lib/tripRoute';
+import type { Stop, Trip } from '@/lib/trips';
 import { radius } from '@/theme/tokens';
 import { useColors } from '@/theme/useColors';
 
-type Props = { stops: Stop[]; route: RouteData | null };
+type Props = { trip: Trip; stops: Stop[]; route: RouteData | null };
 
 const PADDING = { top: 40, right: 40, bottom: 40, left: 40 };
 
 /** Route preview. Draws the real road route when we have it, a dashed straight line when we do not. */
-export function TripMap({ stops, route }: Props) {
+export function TripMap({ trip, stops, route }: Props) {
   const c = useColors();
   const camera = useRef<CameraRef>(null);
 
   const line = useMemo<[number, number][]>(
-    () => route?.geometry ?? stops.map((s) => [s.lng, s.lat]),
-    [route, stops],
+    () => route?.geometry ?? routePoints(trip, stops).map((p) => [p.lng, p.lat]),
+    [route, trip, stops],
   );
 
   const fit = useCallback(() => {
@@ -85,6 +86,11 @@ export function TripMap({ stops, route }: Props) {
               }}
             />
           </GeoJSONSource>
+        ) : null}
+        {trip.origin ? (
+          <ViewAnnotation id="origin" lngLat={[trip.origin.lng, trip.origin.lat]}>
+            <MapPin tone="me" />
+          </ViewAnnotation>
         ) : null}
         {stops.map((s, i) => (
           <ViewAnnotation key={s.id} id={`stop-${s.id}`} lngLat={[s.lng, s.lat]}>

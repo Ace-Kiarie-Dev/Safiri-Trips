@@ -1,10 +1,14 @@
 import { getDb } from './db';
 
+export type Origin = { name: string; lat: number; lng: number };
+
 export type Trip = {
   id: string;
   title: string;
   startDate: string | null;
   days: number;
+  origin: Origin | null;
+  roundTrip: boolean;
   createdAt: number;
   offlineAt: number | null;
   stopCount: number;
@@ -30,6 +34,10 @@ type TripRow = {
   title: string;
   start_date: string | null;
   days: number;
+  origin_name: string | null;
+  origin_lat: number | null;
+  origin_lng: number | null;
+  round_trip: number;
   created_at: number;
   offline_at: number | null;
   stop_count: number;
@@ -59,6 +67,11 @@ const toTrip = (r: TripRow): Trip => ({
   title: r.title,
   startDate: r.start_date,
   days: r.days,
+  origin:
+    r.origin_name && r.origin_lat !== null && r.origin_lng !== null
+      ? { name: r.origin_name, lat: r.origin_lat, lng: r.origin_lng }
+      : null,
+  roundTrip: !!r.round_trip,
   createdAt: r.created_at,
   offlineAt: r.offline_at,
   stopCount: r.stop_count,
@@ -74,7 +87,8 @@ const toStop = (r: StopRow): Stop => ({
   storySlug: r.story_slug,
 });
 
-const TRIP_SELECT = `SELECT t.id, t.title, t.start_date, t.days, t.created_at, t.offline_at,
+const TRIP_SELECT = `SELECT t.id, t.title, t.start_date, t.days, t.origin_name, t.origin_lat,
+  t.origin_lng, t.round_trip, t.created_at, t.offline_at,
   (SELECT COUNT(*) FROM stops s WHERE s.trip_id = t.id) AS stop_count FROM trips t`;
 
 export async function listTrips(): Promise<Trip[]> {
@@ -120,6 +134,22 @@ export async function updateTrip(id: string, input: TripInput) {
     clampDays(input.days),
     id,
   );
+}
+
+export async function setTripOrigin(id: string, origin: Origin | null) {
+  const db = await getDb();
+  await db.runAsync(
+    'UPDATE trips SET origin_name = ?, origin_lat = ?, origin_lng = ? WHERE id = ?',
+    origin ? origin.name.slice(0, 80) : null,
+    origin?.lat ?? null,
+    origin?.lng ?? null,
+    id,
+  );
+}
+
+export async function setRoundTrip(id: string, roundTrip: boolean) {
+  const db = await getDb();
+  await db.runAsync('UPDATE trips SET round_trip = ? WHERE id = ?', roundTrip ? 1 : 0, id);
 }
 
 export async function deleteTrip(id: string) {

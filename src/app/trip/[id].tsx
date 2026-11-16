@@ -25,6 +25,7 @@ import { generatePacking } from '@/lib/packing';
 import { fetchRoute, fetchWeather } from '@/lib/queries';
 import { shareTrip, tripAsText } from '@/lib/share';
 import { getStory } from '@/lib/stories';
+import { routePoints } from '@/lib/tripRoute';
 import { deleteTrip, updateTrip, type TripInput } from '@/lib/trips';
 import { tripWindow } from '@/lib/tripWeather';
 import { useSettings } from '@/state/settings';
@@ -49,12 +50,16 @@ export default function TripDetailScreen() {
   const stopsQuery = useStops(id);
   const stops = useMemo(() => stopsQuery.data ?? [], [stopsQuery.data]);
 
+  const points = useMemo(
+    () => (trip.data ? routePoints(trip.data, stops) : []),
+    [trip.data, stops],
+  );
   const routeQuery = useQuery({
-    queryKey: ['route', stops.map((s) => `${s.lat},${s.lng}`).join('|')],
-    queryFn: () => fetchRoute(stops),
-    enabled: stops.length >= 2,
+    queryKey: ['route', points.map((p) => `${p.lat},${p.lng}`).join('|')],
+    queryFn: () => fetchRoute(points),
+    enabled: points.length >= 2,
   });
-  const route = stops.length >= 2 ? (routeQuery.data ?? null) : null;
+  const route = points.length >= 2 ? (routeQuery.data ?? null) : null;
 
   const weather = useQueries({
     queries: stops.map((s) => ({
@@ -156,7 +161,7 @@ export default function TripDetailScreen() {
     ]);
 
   const routeNote =
-    stops.length < 2
+    points.length < 2
       ? null
       : routeQuery.isPending
         ? 'Working out the drive…'
@@ -183,7 +188,7 @@ export default function TripDetailScreen() {
         </>
       }
     >
-      <TripMap stops={stops} route={route} />
+      <TripMap trip={data} stops={stops} route={route} />
       <View style={styles.summary}>
         <AppText variant="label" tone="muted" style={styles.flex}>
           {data.startDate ? `${formatDay(data.startDate)} · ` : ''}
@@ -198,7 +203,7 @@ export default function TripDetailScreen() {
       <Segmented options={TABS} value={tab} onChange={setTab} />
       <View style={styles.tab}>
         {tab === 'stops' ? (
-          <StopsTab tripId={id} stops={stops} route={route} routeNote={routeNote} />
+          <StopsTab trip={data} stops={stops} route={route} routeNote={routeNote} />
         ) : tab === 'weather' ? (
           <WeatherTab stops={stops} weather={weather} tripDates={packing.dates} />
         ) : (

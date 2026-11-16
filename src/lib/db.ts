@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 
 let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
@@ -49,6 +49,14 @@ async function migrate(db: SQLite.SQLiteDatabase) {
           key TEXT PRIMARY KEY NOT NULL,
           value TEXT NOT NULL
         );
+      `);
+    }
+    if (current < 2) {
+      await tx.execAsync(`
+        ALTER TABLE trips ADD COLUMN origin_name TEXT;
+        ALTER TABLE trips ADD COLUMN origin_lat REAL;
+        ALTER TABLE trips ADD COLUMN origin_lng REAL;
+        ALTER TABLE trips ADD COLUMN round_trip INTEGER NOT NULL DEFAULT 0;
       `);
     }
     await tx.execAsync(`PRAGMA user_version = ${SCHEMA_VERSION}`);

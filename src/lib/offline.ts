@@ -3,7 +3,8 @@ import { OfflineManager, type LngLatBounds } from '@maplibre/maplibre-react-nati
 import { cacheSetPins } from './cache';
 import { MAP_STYLE_URL } from './config';
 import { cacheKeys, fetchNearby, fetchRoute, fetchWeather, fetchWikiPlace } from './queries';
-import { listStops, listTrips, setTripOffline, type Stop } from './trips';
+import { routePoints } from './tripRoute';
+import { getTrip, listStops, listTrips, setTripOffline, type Stop, type Trip } from './trips';
 
 const MIN_ZOOM = 5;
 const MAX_ZOOM = 12;
@@ -51,13 +52,14 @@ export const formatBytes = (bytes: number) =>
     ? `${Math.max(1, Math.round(bytes / 1024))} KB`
     : `${Math.round(bytes / (1024 * 1024))} MB`;
 
-function keysFor(stops: Stop[]): string[] {
+function keysFor(trip: Trip, stops: Stop[]): string[] {
   const keys = stops.flatMap((s) => [
     cacheKeys.weather(s),
     cacheKeys.nearby(s),
     cacheKeys.place(s, s.storySlug ? undefined : s.name),
   ]);
-  if (stops.length >= 2) keys.push(cacheKeys.route(stops));
+  const points = routePoints(trip, stops);
+  if (points.length >= 2) keys.push(cacheKeys.route(points));
   return keys;
 }
 
@@ -65,7 +67,7 @@ function keysFor(stops: Stop[]): string[] {
 async function repin() {
   const offline = (await listTrips()).filter((t) => t.offlineAt);
   const keys: string[] = [];
-  for (const t of offline) keys.push(...keysFor(await listStops(t.id)));
+  for (const t of offline) keys.push(...keysFor(t, await listStops(t.id)));
   await cacheSetPins(keys);
 }
 
@@ -87,7 +89,10 @@ export async function saveTripOffline(
   plan: PackPlan,
   onProgress: (percent: number) => void,
 ): Promise<void> {
-  if (stops.length >= 2) await fetchRoute(stops);
+  const trip = await getTrip(tripId);
+  if (!trip) throw new Error('Trip not found');
+  const points = routePoints(trip, stops);
+  if (points.length >= 2) await fetchRoute(points);
   await Promise.all(
     stops.flatMap((s) => [
       fetchWeather(s.lat, s.lng),

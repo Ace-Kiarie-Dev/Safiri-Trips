@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
+import { Calendar } from '@/components/Calendar';
 import { Chip } from '@/components/Chip';
 import { Stepper } from '@/components/Stepper';
 import { TextField } from '@/components/TextField';
@@ -11,17 +13,29 @@ import { space } from '@/theme/tokens';
 
 type Props = { initial?: TripInput; submitLabel: string; onSubmit: (input: TripInput) => void };
 
-const shiftDay = (iso: string, by: number) => {
-  const d = parseDay(iso) ?? new Date();
-  d.setDate(d.getDate() + by);
+const endFrom = (start: string, days: number) => {
+  const d = parseDay(start) ?? new Date();
+  d.setDate(d.getDate() + days - 1);
   return toIsoDay(d);
+};
+
+const daysBetween = (start: string, end: string) => {
+  const a = parseDay(start);
+  const b = parseDay(end);
+  return a && b ? Math.round((b.getTime() - a.getTime()) / 86_400_000) + 1 : 1;
 };
 
 export function TripForm({ initial, submitLabel, onSubmit }: Props) {
   const today = toIsoDay(new Date());
   const [title, setTitle] = useState(initial?.title ?? '');
-  const [startDate, setStartDate] = useState<string | null>(initial?.startDate ?? null);
+  const [dated, setDated] = useState(!!initial?.startDate);
+  const [start, setStart] = useState<string | null>(initial?.startDate ?? null);
+  const [end, setEnd] = useState<string | null>(
+    initial?.startDate ? endFrom(initial.startDate, initial.days) : null,
+  );
   const [days, setDays] = useState(initial?.days ?? 2);
+
+  const resolvedDays = dated && start && end ? daysBetween(start, end) : days;
 
   return (
     <View style={styles.form}>
@@ -35,34 +49,50 @@ export function TripForm({ initial, submitLabel, onSubmit }: Props) {
         returnKeyType="done"
       />
       <View style={styles.chips}>
-        <Chip label="No date yet" filled={startDate === null} onPress={() => setStartDate(null)} />
-        <Chip
-          label="Pick a start date"
-          filled={startDate !== null}
-          onPress={() => setStartDate(startDate ?? today)}
-        />
+        <Chip label="No dates yet" filled={!dated} onPress={() => setDated(false)} />
+        <Chip label="Pick dates" filled={dated} onPress={() => setDated(true)} />
       </View>
-      {startDate ? (
+      {dated ? (
+        <>
+          <Calendar
+            start={start}
+            end={end}
+            minDate={today}
+            maxDays={MAX_DAYS}
+            onChange={(s, e) => {
+              setStart(s);
+              setEnd(e);
+            }}
+          />
+          <AppText variant="label" tone="muted" accessibilityLiveRegion="polite">
+            {!start
+              ? 'Tap the first day of your trip.'
+              : !end
+                ? `From ${formatDay(start)}. Now tap the last day, or tap it again for a day trip.`
+                : `${formatDay(start)} to ${formatDay(end)} · ${resolvedDays} ${resolvedDays === 1 ? 'day' : 'days'}`}
+          </AppText>
+        </>
+      ) : (
         <Stepper
-          label="Start date"
-          value={formatDay(startDate)}
-          onDecrease={() => setStartDate(shiftDay(startDate, -1))}
-          onIncrease={() => setStartDate(shiftDay(startDate, 1))}
-          canDecrease={startDate > today}
+          label="Trip length"
+          value={`${days} ${days === 1 ? 'day' : 'days'}`}
+          onDecrease={() => setDays(days - 1)}
+          onIncrease={() => setDays(days + 1)}
+          canDecrease={days > 1}
+          canIncrease={days < MAX_DAYS}
         />
-      ) : null}
-      <Stepper
-        label="Trip length"
-        value={`${days} ${days === 1 ? 'day' : 'days'}`}
-        onDecrease={() => setDays(days - 1)}
-        onIncrease={() => setDays(days + 1)}
-        canDecrease={days > 1}
-        canIncrease={days < MAX_DAYS}
-      />
+      )}
       <Button
         label={submitLabel}
         icon="check"
-        onPress={() => onSubmit({ title, startDate, days })}
+        disabled={dated && !start}
+        onPress={() =>
+          onSubmit({
+            title,
+            startDate: dated ? start : null,
+            days: dated && start ? (end ? daysBetween(start, end) : 1) : days,
+          })
+        }
       />
     </View>
   );
