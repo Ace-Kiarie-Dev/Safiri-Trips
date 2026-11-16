@@ -27,7 +27,7 @@ export const POST = guarded(
     if (!key) return fail(503, "Routing unavailable");
     const body = JSON.stringify({ coordinates: points.map((p) => [p.lng, p.lat]) });
     const data = ors.parse(
-      await upstream("https://api.openrouteservice.org/v2/directions/driving-car/geojson", {
+      await upstream("https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson", {
         method: "POST",
         body,
         headers: { Authorization: key, "Content-Type": "application/json" },

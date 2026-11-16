@@ -5,7 +5,7 @@ export const USER_AGENT = "SafiriTrips/1.0 (+https://nesturex.com; hello@nesture
 /** Only these upstream hosts may ever be contacted. Blocks open-proxy and SSRF abuse. */
 const ALLOWED_HOSTS = new Set([
   "nominatim.openstreetmap.org",
-  "api.openrouteservice.org",
+  "api.heigit.org",
   "api.open-meteo.com",
   "air-quality-api.open-meteo.com",
   "overpass-api.de",
