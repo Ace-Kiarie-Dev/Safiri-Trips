@@ -67,12 +67,15 @@ export function guarded<S extends z.ZodType>(
       if (!parsed.success) return fail(400, "Invalid request");
       return await handler(parsed.data, request);
     } catch (e) {
-      // Server side only, never returned to the client. Path and message only,
-      // no query text and no coordinates.
-      console.error(
-        `${new URL(request.url).pathname} ${e instanceof Error ? e.message : "unknown error"}`,
+      const detail = e instanceof Error ? e.message : "unknown error";
+      // Server side log: path and message only, no query text and no coordinates.
+      console.error(`${new URL(request.url).pathname} ${detail}`);
+      // PROXY_DEBUG also returns the detail to the caller. Set it while
+      // diagnosing, remove it before release.
+      return json(
+        process.env.PROXY_DEBUG ? { error: "Upstream unavailable", detail } : { error: "Upstream unavailable" },
+        502,
       );
-      return fail(502, "Upstream unavailable");
     }
   };
 }

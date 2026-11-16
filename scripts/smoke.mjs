@@ -48,7 +48,7 @@ for (const check of CHECKS) {
       out(`OK   ${check.name}  ${check.show(data)}`);
     } else {
       failed += 1;
-      out(`FAIL ${check.name}  HTTP ${res.status}  ${JSON.stringify(data).slice(0, 160)}`);
+      out(`FAIL ${check.name}  HTTP ${res.status}  ${JSON.stringify(data).slice(0, 400)}`);
     }
   } catch (e) {
     failed += 1;

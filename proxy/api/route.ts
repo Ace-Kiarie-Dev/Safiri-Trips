@@ -25,8 +25,9 @@ const ors = z.object({
 export const POST = guarded(
   schema,
   async ({ points }) => {
-    // Trimmed: a key pasted into a dashboard often carries a newline or spaces.
-    const key = process.env.ORS_API_KEY?.trim();
+    // All whitespace stripped: a key pasted into a dashboard can carry spaces
+    // or line breaks, including in the middle of the value. A JWT has none.
+    const key = process.env.ORS_API_KEY?.replace(/\s+/g, "");
     if (!key) return fail(503, "Routing unavailable");
     const body = JSON.stringify({ coordinates: points.map((p) => [p.lng, p.lat]) });
     const data = ors.parse(
