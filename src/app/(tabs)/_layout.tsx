@@ -1,14 +1,18 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { TabBar } from '@/components/TabBar';
 import { useOnline } from '@/hooks/useOnline';
+import { useSettings } from '@/state/settings';
 import { useColors } from '@/theme/useColors';
 
 export default function TabsLayout() {
   const c = useColors();
   const online = useOnline();
+  const onboarded = useSettings((s) => s.onboarded);
+
+  if (!onboarded) return <Redirect href="/onboarding" />;
 
   return (
     <View style={[styles.root, { backgroundColor: c.bg }]}>

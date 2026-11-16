@@ -1,0 +1,736 @@
+[
+  {
+    "id": "ke-01",
+    "name": "Fort Jesus",
+    "slug": "fort-jesus",
+    "category": "coast",
+    "region": "Mombasa",
+    "lat": -4.0626,
+    "lng": 39.6797,
+    "summary": "A 16th century Portuguese fort guarding Mombasa's old harbour.",
+    "story": "Stand on the ramparts of Fort Jesus and you are standing on the most fought over piece of ground on the Kenyan coast. The Portuguese built it in the 1590s to guard the old harbour, and for the next few centuries it kept changing hands between them, the Omani Arabs and later the British, who used it as a prison. The coral stone walls are thick, the cannons still point at the sea, and the small museum inside holds finds from the coast's long trading history. When you are done, walk straight out into Old Town for narrow streets, carved doors and strong Swahili coffee.",
+    "bestTime": "Early morning or late afternoon, when the stone is cooler.",
+    "tip": "Pair it with a slow walk through Old Town right outside the gate.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-02",
+    "name": "Gedi Ruins",
+    "slug": "gedi-ruins",
+    "category": "coast",
+    "region": "Kilifi",
+    "lat": -3.3094,
+    "lng": 40.0172,
+    "summary": "A Swahili stone town swallowed by forest near Watamu.",
+    "story": "Gedi feels like a secret. You leave the Watamu road, walk under huge old trees, and suddenly there are coral stone walls, arches and wells all around you. This was a real Swahili town with a palace, mosques and houses, lived in for a few hundred years and then left behind. Nobody is fully sure why people walked away, and that is part of the pull. Monkeys move through the canopy while you wander from room to room. It is quiet, shaded and a little eerie in the best way, a good break from the beach heat.",
+    "bestTime": "Mornings, before the coast gets hot and humid.",
+    "tip": "Take a local guide at the gate, the stories make the walls come alive.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-03",
+    "name": "Lamu Old Town",
+    "slug": "lamu-old-town",
+    "category": "coast",
+    "region": "Lamu",
+    "lat": -2.2717,
+    "lng": 40.902,
+    "summary": "Kenya's oldest living Swahili town, where donkeys beat cars.",
+    "story": "Lamu moves at walking pace, because walking is how you get around. The streets of the old town are too narrow for cars, so donkeys and handcarts carry everything, and dhows do the rest. The town has been lived in for centuries and it shows in the coral stone houses, the inner courtyards and the heavy carved doors Lamu is famous for. Life happens on the seafront: fishermen, tea, boats coming and going. Give it a few days. Lamu is not a place you tick off, it is a place you slow down into.",
+    "bestTime": "Cooler, drier months. Evenings on the seafront are best all year.",
+    "tip": "Dress modestly in town, it is a conservative and very welcoming community.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-04",
+    "name": "Diani Beach",
+    "slug": "diani-beach",
+    "category": "coast",
+    "region": "Kwale",
+    "lat": -4.2797,
+    "lng": 39.5947,
+    "summary": "Long white sand and a warm, reef-protected sea on the south coast.",
+    "story": "Diani is the beach most Kenyans picture when someone says 'coast'. The sand is pale and soft, the water is warm, and a reef offshore keeps the waves gentle. It sits south of Mombasa, across the Likoni channel. There is plenty to do if you want it, from kitesurfing and snorkelling to dhow trips, but nobody will judge you for doing nothing. Look up as you walk the beach road: black and white colobus monkeys live in the trees here, and rope bridges have been strung over the road to help them cross safely.",
+    "bestTime": "Dry months are calmest. Check tides for swimming and reef walks.",
+    "tip": "Low tide is for long walks, high tide is for swimming.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com",
+      "Colobus Conservation, colobusconservation.org"
+    ]
+  },
+  {
+    "id": "ke-05",
+    "name": "Watamu",
+    "slug": "watamu",
+    "category": "coast",
+    "region": "Kilifi",
+    "lat": -3.354,
+    "lng": 40.024,
+    "summary": "A small beach town with a protected marine park and nesting turtles.",
+    "story": "Watamu is the quieter cousin on the north coast. Its bays are sheltered by coral, and the marine park just offshore is one of the easiest places in Kenya to put on a mask and see reef fish within minutes. Sea turtles nest on these beaches, and local conservation teams work with fishermen to protect them. Behind the town, Mida Creek is a wide tidal inlet lined with mangroves, good for birds and for a sunset from the boardwalk. Add Gedi Ruins, a short drive away, and you have a full, easy weekend.",
+    "bestTime": "Calm sea months are best for snorkelling.",
+    "tip": "Go snorkelling at low tide when the water is clearest.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke",
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com"
+    ]
+  },
+  {
+    "id": "ke-06",
+    "name": "Malindi and the Vasco da Gama Pillar",
+    "slug": "malindi-and-the-vasco-da-gama-pillar",
+    "category": "coast",
+    "region": "Kilifi",
+    "lat": -3.2236,
+    "lng": 40.13,
+    "summary": "A coral pillar left by Portuguese explorers more than 500 years ago.",
+    "story": "On a rocky point at the edge of Malindi stands a simple white pillar topped with a cross. Vasco da Gama's expedition set it up at the end of the 1400s, after the ruler of Malindi welcomed the Portuguese on their way to India. That makes it one of the oldest European monuments still standing in tropical Africa. The pillar itself is small. What makes the stop worth it is the setting: open ocean on three sides, fishermen below, and a town that has been trading with the world for a very long time.",
+    "bestTime": "Late afternoon, for the light and the breeze.",
+    "tip": "The same ticket usually covers other Malindi heritage sites, ask at the gate.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-07",
+    "name": "Wasini Island",
+    "slug": "wasini-island",
+    "category": "coast",
+    "region": "Kwale",
+    "lat": -4.66,
+    "lng": 39.37,
+    "summary": "A car-free island off Shimoni with coral gardens and Swahili seafood.",
+    "story": "Wasini is a short boat ride from Shimoni, at the far southern end of the coast. There are no cars and no rush. Most visitors come on a dhow day trip: you sail out, snorkel in the marine park nearby, then land on the island for a long Swahili seafood lunch. If you have time, walk through the village and out to the old coral gardens, where fossil coral stands in strange shapes above the mangrove flats. A boardwalk run by local women takes you through them, and the fee supports the community.",
+    "bestTime": "Dry season, when the sea is calmer for the crossing.",
+    "tip": "Carry cash, there are no ATMs on the island.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com",
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-08",
+    "name": "Kisite-Mpunguti Marine Park",
+    "slug": "kisite-mpunguti-marine-park",
+    "category": "coast",
+    "region": "Kwale",
+    "lat": -4.715,
+    "lng": 39.37,
+    "summary": "Clear water, coral and frequent dolphin sightings near the Tanzanian border.",
+    "story": "If you want the best snorkelling on the south coast, this is where the boats go. Kisite-Mpunguti is a protected stretch of sea off Shimoni, with coral gardens around small rocky islets. The water is usually clear and full of colour. Dolphins are seen here often, sometimes riding alongside the dhow on the way out, though wild animals never promise anything. Trips normally combine the park with lunch on Wasini Island next door. Use a licensed boat, keep your fins off the coral, and never chase the dolphins.",
+    "bestTime": "Calmer months give the clearest water.",
+    "tip": "Reef-safe sunscreen and a rash vest beat getting burnt in the water.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-09",
+    "name": "Shimba Hills",
+    "slug": "shimba-hills",
+    "category": "coast",
+    "region": "Kwale",
+    "lat": -4.257,
+    "lng": 39.388,
+    "summary": "Cool coastal forest hills, home to Kenya's sable antelope.",
+    "story": "Half an hour inland from Diani the air changes. Shimba Hills rises above the coast, green and breezy, with views back to the ocean on a clear day. This is the one place in Kenya where you can see sable antelope, big dark animals with long curved horns. Elephants live here too, along with plenty of forest birds. The classic outing is the walk down to Sheldrick Falls with a ranger, a steep path that ends at a waterfall and a pool. It is a perfect half-day escape when you have had enough sand.",
+    "bestTime": "Early morning for animals and cooler walking.",
+    "tip": "The falls walk is steep on the way back, carry water and proper shoes.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-10",
+    "name": "Maasai Mara",
+    "slug": "maasai-mara",
+    "category": "safari",
+    "region": "Narok",
+    "lat": -1.49,
+    "lng": 35.144,
+    "summary": "Kenya's most famous reserve and the stage for the great migration.",
+    "story": "The Mara is the safari most people dream about. Open golden grassland, lone acacia trees, and more animals than you can count. Every year, roughly from July to October, huge herds of wildebeest and zebra arrive from the Serengeti in Tanzania, and their crossings of the Mara River are some of the most dramatic wildlife scenes anywhere. Even outside those months the reserve is full of life, with lions, cheetahs, elephants and leopards all resident. The land belongs to the Maasai community, and the conservancies around the reserve are a great way to visit with fewer vehicles.",
+    "bestTime": "July to October for the migration, good game viewing all year.",
+    "tip": "Book early for migration season, camps fill up months ahead.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com",
+      "Narok County Government, narok.go.ke"
+    ]
+  },
+  {
+    "id": "ke-11",
+    "name": "Amboseli",
+    "slug": "amboseli",
+    "category": "safari",
+    "region": "Kajiado",
+    "lat": -2.6527,
+    "lng": 37.2606,
+    "summary": "Big elephant herds walking under the snows of Kilimanjaro.",
+    "story": "Amboseli gives you the postcard: elephants crossing a flat plain with Mount Kilimanjaro filling the sky behind them. The mountain is across the border in Tanzania, but the best view of it is from here. The park is dry and dusty, yet swamps fed by water from the mountain keep it green in patches, and that is where the elephants, hippos and birds gather. Amboseli's elephants are among the most studied in the world. The mountain hides in cloud for much of the day, so be up early.",
+    "bestTime": "Dawn and dusk, when Kilimanjaro is most likely to be clear.",
+    "tip": "Climb Observation Hill for a view over the swamps and the whole park.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke",
+      "Amboseli Trust for Elephants, elephanttrust.org"
+    ]
+  },
+  {
+    "id": "ke-12",
+    "name": "Tsavo East",
+    "slug": "tsavo-east",
+    "category": "safari",
+    "region": "Taita Taveta",
+    "lat": -2.9,
+    "lng": 38.75,
+    "summary": "Vast open wilderness known for its red-dusted elephants.",
+    "story": "Tsavo East is big, wild and empty in the best way. It is one of Kenya's largest parks, and you can drive for a long time seeing more elephants than people. The elephants here look red, because they dust themselves with the rust-coloured soil. The Galana River cuts through the park, squeezing through the rocks at Lugard Falls. Along the horizon runs the Yatta Plateau, a very long, flat-topped ridge formed by an ancient lava flow. Because it sits between Nairobi and Mombasa, Tsavo East is an easy add-on to a coast trip.",
+    "bestTime": "Dry months, when animals gather at water.",
+    "tip": "Stop at Mudanda Rock, elephants often drink at the dam below it.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-13",
+    "name": "Tsavo West",
+    "slug": "tsavo-west",
+    "category": "safari",
+    "region": "Taita Taveta",
+    "lat": -2.984,
+    "lng": 38.022,
+    "summary": "Volcanic hills, lava fields and the clear pools of Mzima Springs.",
+    "story": "Tsavo West is the more dramatic half of Tsavo. The landscape is all volcanic: dark hills, old cones and the black Shetani lava flow that you can walk on. In the middle of this dry country, Mzima Springs pushes out clear water that has filtered underground from the Chyulu Hills. Hippos and crocodiles live in the pools, and there is a small underwater viewing chamber. The park also has a fenced rhino sanctuary at Ngulia. The bush is thick, so animals take patience, but the scenery pays you back.",
+    "bestTime": "Dry season for easier game viewing.",
+    "tip": "Visit Mzima Springs early, before the day trippers arrive.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-14",
+    "name": "Samburu",
+    "slug": "samburu",
+    "category": "safari",
+    "region": "Samburu",
+    "lat": 0.62,
+    "lng": 37.53,
+    "summary": "A dry northern reserve with animals you will not see in the south.",
+    "story": "Samburu feels like a different country. It is hot, dry and rugged, with the brown Ewaso Ng'iro river running through it like a lifeline. Animals crowd the riverbanks, and several of them are northern specialists you will not find in the Mara: Grevy's zebra with its thin stripes, the reticulated giraffe, the Beisa oryx, the Somali ostrich and the gerenuk, an antelope that stands on its back legs to feed. Guides call them the Samburu special five. Add elephants, leopards and the culture of the Samburu people, and it is a very rich stop.",
+    "bestTime": "Dry months, when wildlife stays close to the river.",
+    "tip": "Combine it with neighbouring Buffalo Springs, just across the river.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com",
+      "Samburu County Government, samburu.go.ke"
+    ]
+  },
+  {
+    "id": "ke-15",
+    "name": "Lake Nakuru National Park",
+    "slug": "lake-nakuru-national-park",
+    "category": "safari",
+    "region": "Nakuru",
+    "lat": -0.3667,
+    "lng": 36.0833,
+    "summary": "A compact Rift Valley park that is one of Kenya's best for rhino.",
+    "story": "Lake Nakuru is small enough to cover in a day and good enough to remember for years. The park wraps around a soda lake on the floor of the Rift Valley. It is fenced and well protected, which is why it is one of the most reliable places in Kenya to see both black and white rhino. Rothschild's giraffes were also moved here for safekeeping. Flamingo numbers go up and down with the lake's water level, so treat them as a bonus. Drive up to Baboon Cliff for a view over the whole lake.",
+    "bestTime": "Any time of year. Mornings are best for rhino.",
+    "tip": "Keep your windows up at Baboon Cliff, the baboons are bold.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke",
+      "UNESCO World Heritage Centre, whc.unesco.org"
+    ]
+  },
+  {
+    "id": "ke-16",
+    "name": "Ol Pejeta Conservancy",
+    "slug": "ol-pejeta-conservancy",
+    "category": "safari",
+    "region": "Laikipia",
+    "lat": 0.0043,
+    "lng": 36.9637,
+    "summary": "Home of the last two northern white rhinos on Earth.",
+    "story": "Ol Pejeta sits on the Laikipia plateau with Mount Kenya on the horizon, and it carries a heavy story. The last two northern white rhinos in the world, both females, live here under constant guard. Seeing them is a quiet, serious moment. The conservancy is also a major sanctuary for black rhino and runs a refuge for rescued chimpanzees. It is not all heavy, though. The plains are full of game, the equator runs right through the property, and you can do night drives and walks that national parks do not allow.",
+    "bestTime": "Dry months for easier driving on the black cotton soil.",
+    "tip": "Book the northern white rhino visit ahead, slots are limited.",
+    "imageCredit": "",
+    "sources": [
+      "Ol Pejeta Conservancy, olpejetaconservancy.org"
+    ]
+  },
+  {
+    "id": "ke-17",
+    "name": "Nairobi National Park",
+    "slug": "nairobi-national-park",
+    "category": "safari",
+    "region": "Nairobi",
+    "lat": -1.3733,
+    "lng": 36.858,
+    "summary": "Lions and rhinos with a city skyline behind them.",
+    "story": "No other capital city has this. A short drive from the city centre you are in open savanna with lions, rhinos, giraffes and buffalo, and the Nairobi skyline standing behind them. It was Kenya's first national park, set up in 1946. The park is fenced on the city side and open to the south, so animals still move in and out. It is also one of the country's important rhino sanctuaries. Inside, a monument marks the spot where Kenya has burned stockpiles of ivory to make a point about poaching.",
+    "bestTime": "Gates open at dawn. Early morning is best for cats.",
+    "tip": "A half-day visit works well before or after a flight.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-18",
+    "name": "Chyulu Hills",
+    "slug": "chyulu-hills",
+    "category": "safari",
+    "region": "Makueni",
+    "lat": -2.68,
+    "lng": 37.88,
+    "summary": "Young green volcanic hills between Amboseli and Tsavo.",
+    "story": "The Chyulus are a long line of soft green hills that look like they were poured onto the plain. In a way they were. These are young volcanoes, and the ground under them is full of lava tubes, including one of the longest known lava tube caves in the world. Rain soaks through the porous rock here and comes out many kilometres away at Mzima Springs in Tsavo West. Up on the ridge you get mist, forest patches and huge views towards Kilimanjaro. Few visitors come, which is exactly the appeal.",
+    "bestTime": "Dry months. The hills are often misty in the rains.",
+    "tip": "Roads are rough, go in a 4x4 and carry everything you need.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-19",
+    "name": "Mount Kenya",
+    "slug": "mount-kenya",
+    "category": "mountains",
+    "region": "Central Kenya",
+    "lat": -0.1521,
+    "lng": 37.3084,
+    "summary": "Africa's second highest mountain, sitting almost on the equator.",
+    "story": "Mount Kenya is the mountain the country is named after. It is an old volcano, worn down into sharp rock peaks with small glaciers clinging on near the top. The two highest summits, Batian and Nelion, need real rock climbing. Most people aim for Point Lenana, the third peak, which strong walkers can reach in a few days. On the way up you pass through farmland, bamboo, forest and strange high moorland full of giant plants. For the Kikuyu and neighbouring communities this is a sacred place, the home of Ngai.",
+    "bestTime": "January to March and July to October are the usual climbing seasons.",
+    "tip": "Take an extra day to acclimatise, altitude is the real challenge here.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-20",
+    "name": "Aberdare Range",
+    "slug": "aberdare-range",
+    "category": "mountains",
+    "region": "Nyandarua and Nyeri",
+    "lat": -0.42,
+    "lng": 36.7,
+    "summary": "Misty moorlands, deep forest and some of Kenya's tallest waterfalls.",
+    "story": "The Aberdares are cold, wet and beautiful. This mountain range north of Nairobi is covered in thick forest lower down and open moorland higher up, cut by rivers that drop over long waterfalls like Karuru. Elephants, buffalo and the rare bongo antelope live in the forest. The range also holds a famous piece of history: in 1952 Princess Elizabeth was staying at Treetops lodge here when her father died and she became Queen. Much of Nairobi's water starts as rain on these slopes, so the forest matters far beyond the park.",
+    "bestTime": "Drier months. Roads get very muddy in the rains.",
+    "tip": "Pack warm layers, it gets properly cold on the moorland.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-21",
+    "name": "Mount Longonot",
+    "slug": "mount-longonot",
+    "category": "mountains",
+    "region": "Nakuru",
+    "lat": -0.9144,
+    "lng": 36.4467,
+    "summary": "A steep day hike up a volcano to walk around its crater rim.",
+    "story": "Longonot is the classic Nairobi day hike. You see it from the Rift Valley viewpoints on the way to Naivasha, a clean volcanic cone with a bite out of the top. The climb to the rim is short and steep, on loose dusty soil. Then the crater opens below you, wide and deep, with its own forest on the floor. The full loop around the rim is the real workout, with a scramble to the highest point at just under 2,800 metres. The views over Lake Naivasha make the dust worth it.",
+    "bestTime": "Start at opening time to beat the heat.",
+    "tip": "There is no shade. Carry more water than you think you need.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-22",
+    "name": "Ngong Hills",
+    "slug": "ngong-hills",
+    "category": "mountains",
+    "region": "Kajiado",
+    "lat": -1.4018,
+    "lng": 36.639,
+    "summary": "A windy ridge walk with Nairobi on one side and the Rift on the other.",
+    "story": "The Ngong Hills are Nairobi's back garden. The ridge runs along the edge of the Great Rift Valley, southwest of the city, in a line of rounded green tops. Walk it end to end and you get the city on one side and the valley floor dropping away on the other. Wind turbines turn at the northern end, and it is breezy up there most days. The name comes from a Maasai word, and one story says the hills are the knuckles of a giant's fist. It is an easy escape when you need air.",
+    "bestTime": "Clear mornings. Afternoons can cloud over.",
+    "tip": "Hire a ranger at the gate if you plan to walk the whole ridge.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Forest Service, kenyaforestservice.org"
+    ]
+  },
+  {
+    "id": "ke-23",
+    "name": "Menengai Crater",
+    "slug": "menengai-crater",
+    "category": "mountains",
+    "region": "Nakuru",
+    "lat": -0.2,
+    "lng": 36.07,
+    "summary": "A giant volcanic caldera on the edge of Nakuru city.",
+    "story": "You can drive to the rim of Menengai from Nakuru in minutes, and nothing prepares you for the size of it. The ground just falls away into an enormous bowl, one of the biggest calderas in the Rift Valley, with a rough floor of old lava far below. Steam rises in places, because the volcano is still hot underneath and is now tapped for geothermal power. Local stories fill the crater with spirits, and people still come here to pray. Stay for the wind, the view and the silence.",
+    "bestTime": "Late afternoon for the light across the crater.",
+    "tip": "The viewpoint is easy by car. The hike to the floor is long and hot.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Forest Service, kenyaforestservice.org"
+    ]
+  },
+  {
+    "id": "ke-24",
+    "name": "Hell's Gate National Park",
+    "slug": "hells-gate-national-park",
+    "category": "mountains",
+    "region": "Nakuru",
+    "lat": -0.916,
+    "lng": 36.313,
+    "summary": "Cycle and walk among zebra and giraffe between red cliffs.",
+    "story": "Hell's Gate is one of the few Kenyan parks where you are encouraged to leave the car. Hire a bicycle at the gate and ride down a wide valley between tall red cliffs, with zebra, giraffe and buffalo grazing beside the road. Rock climbers use Fischer's Tower, a volcanic plug near the entrance. At the far end a narrow sandstone gorge winds down towards hot springs. The whole area is geothermal, and steam from the Olkaria power plants rises over the hills. It sits just south of Lake Naivasha.",
+    "bestTime": "Dry months. Start early for cooler cycling.",
+    "tip": "The gorge can flood suddenly. Only go in with a guide and never in rain.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke"
+    ]
+  },
+  {
+    "id": "ke-25",
+    "name": "Lake Naivasha",
+    "slug": "lake-naivasha",
+    "category": "lakes",
+    "region": "Nakuru",
+    "lat": -0.77,
+    "lng": 36.35,
+    "summary": "A freshwater Rift Valley lake full of hippos and fish eagles.",
+    "story": "Naivasha is the easy weekend that never gets old. About two hours from Nairobi, this freshwater lake sits high on the floor of the Rift Valley, ringed by yellow fever trees. Take a boat out in the morning and you will see hippos, pelicans, cormorants and fish eagles, whose call is the sound of the lake. The shore is lined with campsites, lodges and the flower farms that send Kenyan roses around the world. Use it as a base, too: Hell's Gate, Mount Longonot and Crescent Island are all close.",
+    "bestTime": "Any time. Mornings are calmest on the water.",
+    "tip": "Do not walk by the shore after dark, hippos come out to graze.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com"
+    ]
+  },
+  {
+    "id": "ke-26",
+    "name": "Crescent Island",
+    "slug": "crescent-island",
+    "category": "lakes",
+    "region": "Nakuru",
+    "lat": -0.766,
+    "lng": 36.405,
+    "summary": "Walk freely among giraffe, zebra and wildebeest on Lake Naivasha.",
+    "story": "Crescent Island is a private sanctuary on the edge of Lake Naivasha, shaped like the rim of an old crater. There are no big predators here, which means you get out and walk. Giraffes browse a few metres away, zebra and wildebeest carry on grazing, and waterbuck watch from the grass. It is calm and close in a way a game drive never is. Most people arrive by boat from the lakeshore, spotting hippos and birds on the way. It is a gentle one for children and first-time visitors.",
+    "bestTime": "Morning or late afternoon, for soft light and active animals.",
+    "tip": "Keep a respectful distance, the animals are relaxed but still wild.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com"
+    ]
+  },
+  {
+    "id": "ke-27",
+    "name": "Lake Bogoria",
+    "slug": "lake-bogoria",
+    "category": "lakes",
+    "region": "Baringo",
+    "lat": 0.25,
+    "lng": 36.1,
+    "summary": "A soda lake with boiling hot springs and geysers on its shore.",
+    "story": "Bogoria is where the Rift Valley shows you what is going on underneath. Along the western shore, hot springs bubble and small geysers shoot steam and boiling water into the air. The lake itself is a long, narrow soda lake under a steep escarpment. When conditions are right it turns pink with flamingos feeding on the algae, though the birds move between Rift Valley lakes and no one can promise them. The reserve also shelters greater kudu in the dry bush. It is hot, remote and feels properly untamed.",
+    "bestTime": "Cooler morning hours. Midday heat is intense.",
+    "tip": "Stay well back from the springs, the water really is boiling.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "Baringo County Government, baringo.go.ke"
+    ]
+  },
+  {
+    "id": "ke-28",
+    "name": "Lake Baringo",
+    "slug": "lake-baringo",
+    "category": "lakes",
+    "region": "Baringo",
+    "lat": 0.63,
+    "lng": 36.08,
+    "summary": "A freshwater lake famous among birdwatchers, dotted with islands.",
+    "story": "Baringo is one of only two freshwater lakes in Kenya's Rift Valley, and it is a favourite with birders. Hundreds of species have been recorded around the lake and the cliffs nearby, from fish eagles and herons to tiny bee-eaters. A boat trip takes you past hippos and crocodiles and out to the islands in the middle. The Njemps, or Il Chamus, community fish these waters from light balsa wood boats. Baringo is a long drive north of Nakuru, so the pace is slow and the nights are quiet.",
+    "bestTime": "October to April adds migrant birds to the residents.",
+    "tip": "Go out with a local bird guide at dawn, you will see three times as much.",
+    "imageCredit": "",
+    "sources": [
+      "Magical Kenya (Kenya Tourism Board), magicalkenya.com",
+      "Baringo County Government, baringo.go.ke"
+    ]
+  },
+  {
+    "id": "ke-29",
+    "name": "Lake Elmenteita",
+    "slug": "lake-elmenteita",
+    "category": "lakes",
+    "region": "Nakuru",
+    "lat": -0.44,
+    "lng": 36.24,
+    "summary": "A quiet soda lake between Naivasha and Nakuru, loved by pelicans.",
+    "story": "Most people see Lake Elmenteita from the highway and keep driving. Stop. This shallow soda lake is part of the Kenya Lake System, a World Heritage Site shared with Nakuru and Bogoria, and it is an important breeding place for great white pelicans. Flamingos feed along the shoreline when the water suits them. Across the lake a line of hills forms the shape of a person lying down, known as the Sleeping Warrior. With few crowds and wide open views, it is one of the most peaceful stops in the Rift Valley.",
+    "bestTime": "Sunrise and sunset, when the lake changes colour.",
+    "tip": "Stop at the highway viewpoint first to take in the full shape of the lake.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org"
+    ]
+  },
+  {
+    "id": "ke-30",
+    "name": "Lake Turkana",
+    "slug": "lake-turkana",
+    "category": "lakes",
+    "region": "Marsabit and Turkana",
+    "lat": 2.756,
+    "lng": 36.72,
+    "summary": "The Jade Sea, the world's largest permanent desert lake.",
+    "story": "Getting to Lake Turkana is an expedition, and that is the point. After days of rock, wind and heat, the lake appears, a long sheet of green-blue water in the middle of the desert. People call it the Jade Sea. It is the largest permanent desert lake in the world, home to a big population of Nile crocodiles, and its shores hold some of the most important early human fossil sites ever found. Communities like the Turkana, El Molo, Rendille and Gabbra live around it. Come ready for a hard, unforgettable journey.",
+    "bestTime": "Cooler months. It is hot and very windy all year.",
+    "tip": "Travel with an experienced operator, distances and conditions are serious.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-31",
+    "name": "Hyrax Hill",
+    "slug": "hyrax-hill",
+    "category": "heritage",
+    "region": "Nakuru",
+    "lat": -0.2817,
+    "lng": 36.1042,
+    "summary": "A small prehistoric site and museum on the edge of Nakuru.",
+    "story": "Hyrax Hill is a short stop with a long timeline. On this rocky hill just outside Nakuru, archaeologists uncovered settlements and burial sites left by people who lived here thousands of years ago, as well as much later ones. Mary Leakey led early excavations in the 1930s. You can walk the hill, see the remains of stone enclosures, and find a bao game board cut into the rock. The little museum in the old farmhouse explains what was found. It takes an hour and adds depth to any Nakuru trip.",
+    "bestTime": "Any time. It is a quick, shaded stop.",
+    "tip": "Climb to the top of the hill for a view over Lake Nakuru.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-32",
+    "name": "Olorgesailie",
+    "slug": "olorgesailie",
+    "category": "heritage",
+    "region": "Kajiado",
+    "lat": -1.578,
+    "lng": 36.446,
+    "summary": "A Rift Valley site covered in ancient stone hand axes.",
+    "story": "On the hot road from Nairobi to Lake Magadi there is a place where the ground is littered with stone tools. Olorgesailie was once the shore of a lake, and early humans made hand axes here in huge numbers over a very long period. Louis and Mary Leakey excavated the site in the 1940s, and research has continued ever since. Walkways take you past the tools lying where they were found, along with fossil bones of extinct animals. It is quiet, dusty and humbling. You are looking at someone's work from hundreds of thousands of years ago.",
+    "bestTime": "Early morning. This part of the Rift gets very hot.",
+    "tip": "Carry water and a hat, there is little shade on the walk.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke",
+      "Smithsonian Human Origins Program, humanorigins.si.edu"
+    ]
+  },
+  {
+    "id": "ke-33",
+    "name": "Koobi Fora",
+    "slug": "koobi-fora",
+    "category": "heritage",
+    "region": "Marsabit",
+    "lat": 3.948,
+    "lng": 36.187,
+    "summary": "One of the world's richest early human fossil sites, on Lake Turkana.",
+    "story": "Koobi Fora is a name you meet in every book on human origins. It lies on the remote eastern shore of Lake Turkana, inside Sibiloi National Park. Starting in the late 1960s, teams led by Richard Leakey found a remarkable run of early human fossils here, which changed how scientists understand our family tree. Today there is a research base and a small museum, and the bare, eroded landscape is a sight on its own. Very few travellers make it this far. If you do, you have earned the bragging rights.",
+    "bestTime": "Cooler months. Expect heat and wind at any time.",
+    "tip": "Plan this as a guided expedition with fuel, water and backup.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke",
+      "UNESCO World Heritage Centre, whc.unesco.org"
+    ]
+  },
+  {
+    "id": "ke-34",
+    "name": "Thimlich Ohinga",
+    "slug": "thimlich-ohinga",
+    "category": "heritage",
+    "region": "Migori",
+    "lat": -0.891,
+    "lng": 34.326,
+    "summary": "Dry stone walled enclosures built centuries ago near Lake Victoria.",
+    "story": "Thimlich Ohinga is one of the most impressive things in western Kenya that most Kenyans have never visited. It is a set of large stone enclosures, with walls built by carefully stacking rocks without any mortar. They are thought to date from around the 16th century and were used as a fortified home for families and their livestock. The name comes from Dholuo and describes a frightening dense forest. Walk through the low gateways and you can still see how the space was organised. It became a World Heritage Site in 2018.",
+    "bestTime": "Drier months, when the access roads are easier.",
+    "tip": "Ask the site guide to show you how the walls hold together without mortar.",
+    "imageCredit": "",
+    "sources": [
+      "UNESCO World Heritage Centre, whc.unesco.org",
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-35",
+    "name": "Kit Mikayi",
+    "slug": "kit-mikayi",
+    "category": "heritage",
+    "region": "Kisumu",
+    "lat": -0.117,
+    "lng": 34.54,
+    "summary": "A towering stack of boulders that is sacred to the Luo community.",
+    "story": "West of Kisumu, a pile of huge granite boulders rises out of the farmland, balanced on each other in a way that looks impossible. This is Kit Mikayi, which means the stone of the first wife in Dholuo. Luo legend tells of an old man who loved the rock so much that his wife said it had become his first wife. People still come to pray among the boulders, and you may meet worshippers in the caves. Local guides will take you up between the rocks and tell the stories properly.",
+    "bestTime": "Morning or late afternoon, when the rock is cooler to climb.",
+    "tip": "It is a place of worship, so ask before taking photos of people.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke",
+      "Kisumu County Government, kisumu.go.ke"
+    ]
+  },
+  {
+    "id": "ke-36",
+    "name": "Karen Blixen Museum",
+    "slug": "karen-blixen-museum",
+    "category": "heritage",
+    "region": "Nairobi",
+    "lat": -1.3521,
+    "lng": 36.7128,
+    "summary": "The farmhouse from Out of Africa, at the foot of the Ngong Hills.",
+    "story": "This low stone farmhouse was the home of Karen Blixen, the Danish writer who ran a coffee farm here in the early 1900s and later wrote Out of Africa about those years. The Nairobi suburb around it, Karen, carries her name. The house has been restored with furniture and objects from her time, and guides walk you through the rooms and the story. Outside, the wide lawn looks towards the Ngong Hills she wrote about. Whatever you think of the colonial era, the visit gives you a clear picture of it.",
+    "bestTime": "Any day. Mornings are quieter.",
+    "tip": "Combine it with the Giraffe Centre, which is a few minutes away.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-37",
+    "name": "Nairobi National Museum",
+    "slug": "nairobi-national-museum",
+    "category": "heritage",
+    "region": "Nairobi",
+    "lat": -1.2741,
+    "lng": 36.8145,
+    "summary": "Kenya's flagship museum of nature, culture and human origins.",
+    "story": "If you want to understand Kenya in two hours, start here. The Nairobi National Museum on Museum Hill brings the country's story under one roof: wildlife, art, the cultures of Kenya's many communities, and the history of the nation. Its human origins gallery is the highlight, with fossils found in the Rift Valley and around Lake Turkana that are known around the world. The grounds have gardens and a snake park next door. It is a strong first stop for visitors, and a good reminder for the rest of us.",
+    "bestTime": "Weekday mornings are calmest.",
+    "tip": "Start with the human origins gallery while you are still fresh.",
+    "imageCredit": "",
+    "sources": [
+      "National Museums of Kenya, museums.or.ke"
+    ]
+  },
+  {
+    "id": "ke-38",
+    "name": "Bomas of Kenya",
+    "slug": "bomas-of-kenya",
+    "category": "heritage",
+    "region": "Nairobi",
+    "lat": -1.341,
+    "lng": 36.768,
+    "summary": "Traditional homesteads and live dance from across Kenya in one place.",
+    "story": "Boma means homestead, and Bomas of Kenya is a village of them. Spread across the grounds in Lang'ata are traditional homes built in the styles of Kenya's different communities, so in one walk you can compare a Kikuyu hut, a Luo homestead, a Maasai manyatta and many more. The main event is the afternoon show in the big round hall, where the resident troupe performs dances and music from all over the country, usually ending with acrobats. It is lively, loud and a lot of fun with family or visitors.",
+    "bestTime": "Afternoons, in time for the daily show.",
+    "tip": "Arrive early enough to walk the homesteads before the show starts.",
+    "imageCredit": "",
+    "sources": [
+      "Bomas of Kenya, bomasofkenya.co.ke"
+    ]
+  },
+  {
+    "id": "ke-39",
+    "name": "Giraffe Centre",
+    "slug": "giraffe-centre",
+    "category": "city",
+    "region": "Nairobi",
+    "lat": -1.376,
+    "lng": 36.745,
+    "summary": "Feed endangered Rothschild's giraffes eye to eye in Lang'ata.",
+    "story": "At the Giraffe Centre you climb a raised platform and suddenly you are face to face with a giraffe. Hold out a pellet and a long blue-grey tongue takes it from your hand. The centre was started in the late 1970s to breed the endangered Rothschild's giraffe and to teach Kenyan schoolchildren about conservation, and both jobs continue today. Giraffes raised here have been released into parks around the country. Across the road there is a short nature trail through the forest if you want a quiet walk afterwards.",
+    "bestTime": "Morning, when the giraffes are hungriest.",
+    "tip": "Wash your hands after feeding. The staff will show you how to do it safely.",
+    "imageCredit": "",
+    "sources": [
+      "African Fund for Endangered Wildlife Kenya, giraffecentre.org"
+    ]
+  },
+  {
+    "id": "ke-40",
+    "name": "Sheldrick Wildlife Trust",
+    "slug": "sheldrick-wildlife-trust",
+    "category": "city",
+    "region": "Nairobi",
+    "lat": -1.378,
+    "lng": 36.774,
+    "summary": "The Nairobi nursery where orphaned baby elephants are raised.",
+    "story": "This is the stop that melts everyone. At the edge of Nairobi National Park, the Sheldrick Wildlife Trust raises orphaned elephant calves, many of them rescued after losing their mothers to poaching, drought or conflict. During the visiting hour the babies come running in for their milk bottles, then play in the mud while a keeper tells each one's story. The trust was founded in 1977 by Daphne Sheldrick. When the elephants are old enough they move to Tsavo and are slowly returned to the wild. Fostering one is a popular gift.",
+    "bestTime": "Visits run at a fixed time each day. Check before you go.",
+    "tip": "Book online in advance, walk-ins are often turned away.",
+    "imageCredit": "",
+    "sources": [
+      "Sheldrick Wildlife Trust, sheldrickwildlifetrust.org"
+    ]
+  },
+  {
+    "id": "ke-41",
+    "name": "Karura Forest",
+    "slug": "karura-forest",
+    "category": "city",
+    "region": "Nairobi",
+    "lat": -1.24,
+    "lng": 36.834,
+    "summary": "A real forest inside Nairobi, saved by people who fought for it.",
+    "story": "Karura is proof that a city can keep its lungs. This large forest in the north of Nairobi has shaded trails for walking, running and cycling, a waterfall, caves and picnic spots. It almost did not survive. In the late 1990s parts of it were being handed out for development, and Professor Wangari Maathai led protests to stop it, facing violence for her trouble. She later won the Nobel Peace Prize. Today the forest is managed together with the local community, and it is one of the safest green spaces in the city.",
+    "bestTime": "Early morning or late afternoon. Weekends get busy.",
+    "tip": "Bikes can be hired inside. Carry your ID for the gate.",
+    "imageCredit": "",
+    "sources": [
+      "Friends of Karura Forest, friendsofkarura.org",
+      "Kenya Forest Service, kenyaforestservice.org"
+    ]
+  },
+  {
+    "id": "ke-42",
+    "name": "Kakamega Forest",
+    "slug": "kakamega-forest",
+    "category": "city",
+    "region": "Kakamega",
+    "lat": 0.29,
+    "lng": 34.86,
+    "summary": "Kenya's only tropical rainforest, alive with birds and monkeys.",
+    "story": "Step into Kakamega Forest and Kenya suddenly feels like central Africa. This is the country's only real tropical rainforest, a surviving piece of the great forest that once stretched across the continent. Giant trees close over your head, butterflies drift through the light, and monkeys crash around in the canopy. Birders travel a long way for species found nowhere else in Kenya. The classic experience is a dawn walk up a hill to watch the sun rise over the mist. Local guides know every call, tree and trail.",
+    "bestTime": "Go at dawn. Rain is possible in any month.",
+    "tip": "Hire a community guide, you will miss most of the wildlife without one.",
+    "imageCredit": "",
+    "sources": [
+      "Kenya Wildlife Service, kws.go.ke",
+      "Kenya Forest Service, kenyaforestservice.org"
+    ]
+  }
+]

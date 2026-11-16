@@ -14,7 +14,19 @@ export type IconName =
   | 'alert'
   | 'wifiOff'
   | 'check'
-  | 'bookmark';
+  | 'bookmark'
+  | 'up'
+  | 'down'
+  | 'trash'
+  | 'close'
+  | 'pin'
+  | 'sun'
+  | 'cloud'
+  | 'rain'
+  | 'storm'
+  | 'bell'
+  | 'car'
+  | 'chevron';
 
 type Props = { name: IconName; size?: number; color: string };
 
@@ -102,5 +114,54 @@ function glyph(name: IconName) {
       return <Path d="M5 12l5 5 9-10" />;
     case 'bookmark':
       return <Path d="M6 3h12v18l-6-4-6 4Z" />;
+    case 'up':
+      return <Path d="M6 15l6-6 6 6" />;
+    case 'down':
+      return <Path d="M6 9l6 6 6-6" />;
+    case 'chevron':
+      return <Path d="M9 5l7 7-7 7" />;
+    case 'trash':
+      return <Path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6" />;
+    case 'close':
+      return <Path d="M6 6l12 12M18 6 6 18" />;
+    case 'pin':
+      return (
+        <>
+          <Path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12Z" />
+          <Circle cx={12} cy={9} r={2.5} />
+        </>
+      );
+    case 'sun':
+      return (
+        <>
+          <Circle cx={12} cy={12} r={4} />
+          <Path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+        </>
+      );
+    case 'cloud':
+      return <Path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18Z" />;
+    case 'rain':
+      return (
+        <>
+          <Path d="M7 15h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 6.5 4.3 4.3 0 0 0 7 15Z" />
+          <Path d="M8 18l-1 3M12 18l-1 3M16 18l-1 3" />
+        </>
+      );
+    case 'storm':
+      return (
+        <>
+          <Path d="M7 15h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 6.5 4.3 4.3 0 0 0 7 15Z" />
+          <Path d="M13 15l-2 4h3l-2 3" />
+        </>
+      );
+    case 'bell':
+      return <Path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4ZM10 21h4" />;
+    case 'car':
+      return (
+        <>
+          <Path d="M5 16V11l2-5h10l2 5v5M3 16h18v3H3Z" />
+          <Path d="M5 11h14" />
+        </>
+      );
   }
 }

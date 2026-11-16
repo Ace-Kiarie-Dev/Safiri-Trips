@@ -1,19 +1,26 @@
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { radius, space } from '@/theme/tokens';
 import { useColors } from '@/theme/useColors';
 import { AppText } from './AppText';
 
-type Props = { label: string; filled?: boolean };
+type Props = { label: string; filled?: boolean; onPress?: () => void };
 
-export function Chip({ label, filled }: Props) {
+export function Chip({ label, filled, onPress }: Props) {
   const c = useColors();
   return (
-    <View style={[styles.chip, { backgroundColor: filled ? c.primary : c.line }]}>
+    <Pressable
+      onPress={onPress}
+      disabled={!onPress}
+      accessibilityRole={onPress ? 'button' : 'text'}
+      accessibilityState={{ selected: !!filled }}
+      hitSlop={8}
+      style={[styles.chip, { backgroundColor: filled ? c.primary : c.line }]}
+    >
       <AppText variant="micro" tone={filled ? 'onPrimary' : 'ink'}>
         {label}
       </AppText>
-    </View>
+    </Pressable>
   );
 }
 
