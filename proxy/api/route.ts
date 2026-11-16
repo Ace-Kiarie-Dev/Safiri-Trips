@@ -25,7 +25,8 @@ const ors = z.object({
 export const POST = guarded(
   schema,
   async ({ points }) => {
-    const key = process.env.ORS_API_KEY;
+    // Trimmed: a key pasted into a dashboard often carries a newline or spaces.
+    const key = process.env.ORS_API_KEY?.trim();
     if (!key) return fail(503, "Routing unavailable");
     const body = JSON.stringify({ coordinates: points.map((p) => [p.lng, p.lat]) });
     const data = ors.parse(
