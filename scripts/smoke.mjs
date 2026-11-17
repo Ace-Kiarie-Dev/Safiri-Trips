@@ -48,6 +48,19 @@ const CHECKS = [
     show: (d) => `${d.places.length} places, e.g. ${d.places[0]?.name ?? 'none'}`,
   },
   {
+    name: 'route2 ',
+    path: '/api/route',
+    // Lake Nakuru's pin is in the lake: proves far-from-road pins still route.
+    body: {
+      points: [
+        { lat: -1.2921, lng: 36.8219 },
+        { lat: -0.3667, lng: 36.0833 },
+      ],
+    },
+    expect: (d) => d.distanceM > 0,
+    show: (d) => `${Math.round(d.distanceM / 1000)} km to Lake Nakuru`,
+  },
+  {
     name: 'route  ',
     path: '/api/route',
     body: {

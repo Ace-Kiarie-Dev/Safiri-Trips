@@ -28,7 +28,13 @@ export const POST = guarded(
     // or line breaks, including in the middle of the value. A JWT has none.
     const key = process.env.ORS_API_KEY?.replace(/\s+/g, '');
     if (!key) return fail(503, 'Routing unavailable');
-    const body = JSON.stringify({ coordinates: points.map((p) => [p.lng, p.lat]) });
+    // Pins for parks, lakes and islands often sit far from any road. ORS only
+    // searches 350 m by default and rejects the whole route; -1 means snap to the
+    // nearest road however far it is.
+    const body = JSON.stringify({
+      coordinates: points.map((p) => [p.lng, p.lat]),
+      radiuses: points.map(() => -1),
+    });
     const data = ors.parse(
       await upstream('https://api.heigit.org/openrouteservice/v2/directions/driving-car/geojson', {
         method: 'POST',
