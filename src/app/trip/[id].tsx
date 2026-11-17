@@ -10,6 +10,7 @@ import { Segmented } from '@/components/Segmented';
 import { Skeleton } from '@/components/Skeleton';
 import { StatPill } from '@/components/StatPill';
 import { PackingTab } from '@/features/trip/PackingTab';
+import { SharePreview } from '@/features/trip/SharePreview';
 import { StopsTab } from '@/features/trip/StopsTab';
 import { TripActions } from '@/features/trip/TripActions';
 import { TripForm } from '@/features/trip/TripForm';
@@ -42,6 +43,7 @@ export default function TripDetailScreen() {
   const units = useSettings((s) => s.units);
   const [tab, setTab] = useState<TabId>('stops');
   const [editing, setEditing] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   const trip = useTrip(id);
   const stopsQuery = useStops(id);
@@ -174,13 +176,33 @@ export default function TripDetailScreen() {
             icon="share"
             label="Share trip"
             disabled={stops.length === 0}
-            onPress={() => void shareTrip(tripAsText(data, stops, route, units))}
+            onPress={() =>
+              Alert.alert(
+                'Share this trip',
+                'As a picture for WhatsApp or Instagram, or as text?',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Text',
+                    onPress: () => void shareTrip(tripAsText(data, stops, route, units)),
+                  },
+                  { text: 'Picture', onPress: () => setSharing(true) },
+                ],
+              )
+            }
           />
           <IconButton icon="settings" label="Edit trip" onPress={() => setEditing(true)} />
           <IconButton icon="trash" label="Delete trip" onPress={confirmDelete} />
         </>
       }
     >
+      <SharePreview
+        visible={sharing}
+        onClose={() => setSharing(false)}
+        trip={data}
+        stops={stops}
+        route={route}
+      />
       <TripMap trip={data} stops={stops} route={route} />
       <View style={styles.summary}>
         <StatPill
