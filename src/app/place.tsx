@@ -13,6 +13,7 @@ import { formatTemp } from '@/lib/format';
 import { parsePlaceParams, toPlaceParams } from '@/lib/placeParams';
 import { fetchNearby, fetchWeather, fetchWikiPlace } from '@/lib/queries';
 import { categoryLabel, getStory } from '@/lib/stories';
+import { getWaypoint, waypointLabel } from '@/lib/waypoints';
 import { describeWeather } from '@/lib/weatherCode';
 import { useSettings } from '@/state/settings';
 import { radius, space } from '@/theme/tokens';
@@ -27,6 +28,7 @@ export default function PlaceScreen() {
   const units = useSettings((s) => s.units);
   const place = parsePlaceParams(useLocalSearchParams());
   const story = getStory(place?.slug);
+  const waypoint = getWaypoint(place?.slug);
   const lat = place?.lat ?? 0;
   const lng = place?.lng ?? 0;
   const isPin = place?.name === 'Dropped pin';
@@ -82,6 +84,7 @@ export default function PlaceScreen() {
 
       <View style={styles.chips}>
         {story ? <Chip label={categoryLabel(story.category)} filled /> : null}
+        {waypoint ? <Chip label={waypointLabel[waypoint.kind]} filled /> : null}
         {place.subtitle ? <Chip label={story?.region ?? place.subtitle} /> : null}
         {today ? (
           <Chip label={`${describeWeather(today.code).label} · ${formatTemp(today.maxC, units)}`} />
@@ -105,6 +108,24 @@ export default function PlaceScreen() {
           <AppText variant="micro" tone="muted">
             Checked against: {story.sources.join('; ')}
           </AppText>
+        </View>
+      ) : waypoint ? (
+        <View style={styles.block}>
+          <AppText variant="title">{waypoint.blurb}</AppText>
+          <View style={[styles.note, { backgroundColor: c.surface, borderColor: c.line }]}>
+            <AppText variant="label" tone="primary">
+              Tip
+            </AppText>
+            <AppText>{waypoint.tip}</AppText>
+          </View>
+          {wiki.data ? (
+            <>
+              <AppText style={styles.para}>{wiki.data.extract}</AppText>
+              <AppText variant="micro" tone="muted">
+                Text from Wikipedia, CC BY-SA 4.0.
+              </AppText>
+            </>
+          ) : null}
         </View>
       ) : wiki.isPending ? (
         <Skeleton height={120} style={styles.block} />

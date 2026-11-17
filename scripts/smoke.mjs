@@ -40,8 +40,8 @@ const CHECKS = [
     path: '/api/along',
     body: {
       points: [
-        { lat: -2.0, lng: 37.3 },
-        { lat: -2.3, lng: 37.6 },
+        { lat: -0.95, lng: 36.5 },
+        { lat: -0.77, lng: 36.35 },
       ],
     },
     expect: (d) => Array.isArray(d.places),
@@ -95,7 +95,7 @@ for (const check of CHECKS) {
 
 out(
   failed === 0
-    ? '\nAll five endpoints are working.\n'
+    ? `\nAll ${CHECKS.length} endpoints are working.\n`
     : `\n${failed} of ${CHECKS.length} failed. See above.\n`,
 );
 process.exit(failed === 0 ? 0 : 1);

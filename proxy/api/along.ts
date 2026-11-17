@@ -5,7 +5,7 @@ export const maxDuration = 30;
 
 /** Sample points along a route, a handful at most. */
 const schema = z.object({
-  points: z.array(z.object({ lat, lng })).min(1).max(10),
+  points: z.array(z.object({ lat, lng })).min(1).max(16),
   // Wikipedia caps geosearch at 10 km.
   radius: z.coerce.number().int().min(2000).max(10000).default(10000),
 });
@@ -29,11 +29,11 @@ const geo = z.object({
 
 /** Things that are places to live or pass through, not places to stop at. */
 const NOT_A_STOP =
-  /\b(town|village|city|constituency|county|ward|sub-?county|settlement|suburb|neighbou?rhood|school|university|college|hospital|airport|airstrip|railway|station|road|highway|company|church|diocese|river|stream|dam|power|mine|quarry|factory|prison|border|municipality|division|locality|human settlement|populated place)\b/i;
+  /\b(town|village|city|constituency|county|ward|sub-?county|settlement|suburb|neighbou?rhood|school|university|college|hospital|airport|airstrip|railway|station|road|highway|company|church|diocese|river|stream|dam|power|mine|quarry|factory|prison|border|municipality|division|locality|human settlement|populated place|place in|location in|area in|region in|province)\b/i;
 
 /** Signals of a worthwhile stop in a Wikipedia short description. */
 const GOOD_STOP =
-  /\b(park|reserve|sanctuary|conservancy|forest|hill|hills|mountain|peak|crater|volcano|lava|cave|falls|waterfall|spring|lake|island|beach|ruins|monument|museum|temple|gurdwara|mosque|shrine|heritage|archaeolog|fort|viewpoint|gorge|valley|escarpment|wildlife|game|lodge|camp|rock|plateau)\b/i;
+  /\b(park|reserve|sanctuary|conservancy|forest|hill|hills|mountain|peak|crater|volcano|lava|cave|falls|waterfall|springs?|lake|island|beach|ruins|monument|museum|temple|gurdwara|mosque|shrine|heritage|archaeolog\w*|fort|viewpoint|gorge|escarpment|wildlife|game|lodge|camp|plateau|prehistoric|botanical|garden)\b/i;
 
 export const POST = guarded(
   schema,

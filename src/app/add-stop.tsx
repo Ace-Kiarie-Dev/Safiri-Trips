@@ -18,6 +18,7 @@ import { useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
 import { distanceToRoute, sampleAlong } from '@/lib/geo';
 import { fetchAlong, fetchRoute, searchPlaces } from '@/lib/queries';
 import { categoryIcon, STORIES, type Story } from '@/lib/stories';
+import { WAYPOINTS, waypointLabel, type Waypoint } from '@/lib/waypoints';
 import { routePoints } from '@/lib/tripRoute';
 import { addStop, setTripOrigin, type NewStop } from '@/lib/trips';
 import { Icon } from '@/components/Icon';
@@ -25,11 +26,15 @@ import { useColors } from '@/theme/useColors';
 import { space } from '@/theme/tokens';
 
 const ON_THE_WAY_KM = 15;
+/** Our own places get a little more slack than Wikipedia's. */
+const CURATED_KM = 20;
+const MAX_SUGGESTIONS = 12;
 /** The first stretch of a drive is home turf, not a stop. Whichever is larger applies. */
 const SKIP_START_KM = 30;
 const SKIP_START_FRACTION = 0.12;
 const SKIP_END_KM = 5;
-const SAMPLE_EVERY_KM = 35;
+const SAMPLE_EVERY_KM = 15;
+const MAX_SAMPLES = 16;
 
 type Suggestion = {
   key: string;
@@ -40,6 +45,7 @@ type Suggestion = {
   km: number;
   along: number;
   story?: Story;
+  waypoint?: Waypoint;
   imageUrl?: string | null;
 };
 
@@ -75,7 +81,7 @@ export default function AddStopScreen() {
   const maxAlong = totalKm > 0 ? 1 - SKIP_END_KM / totalKm : 1;
 
   const samples = useMemo(
-    () => (line ? sampleAlong(line, SAMPLE_EVERY_KM, skipStartKm, SKIP_END_KM) : []),
+    () => (line ? sampleAlong(line, SAMPLE_EVERY_KM, skipStartKm, SKIP_END_KM, MAX_SAMPLES) : []),
     [line, skipStartKm],
   );
   const alongQuery = useQuery({
@@ -93,12 +99,12 @@ export default function AddStopScreen() {
     if (!line || forOrigin) return [];
     const taken = new Set(stops.map((s) => s.storySlug));
     const takenNames = new Set(stops.map((s) => s.name.toLowerCase()));
-    const inWindow = (x: { km: number; along: number }) =>
-      x.km <= ON_THE_WAY_KM && x.along >= minAlong && x.along <= maxAlong;
+    const inWindow = (x: { km: number; along: number }, maxKm = ON_THE_WAY_KM) =>
+      x.km <= maxKm && x.along >= minAlong && x.along <= maxAlong;
 
     const curated: Suggestion[] = STORIES.filter((s) => !taken.has(s.slug))
       .map((story) => ({ story, ...distanceToRoute(story, line) }))
-      .filter(inWindow)
+      .filter((x) => inWindow(x, CURATED_KM))
       .map(({ story, km, along }) => ({
         key: story.slug,
         name: story.name,
@@ -110,6 +116,23 @@ export default function AddStopScreen() {
         story,
       }));
     const curatedNames = new Set(curated.map((c) => c.name.toLowerCase()));
+
+    const roadside: Suggestion[] = WAYPOINTS.filter(
+      (w) => !taken.has(w.slug) && !curatedNames.has(w.name.toLowerCase()),
+    )
+      .map((waypoint) => ({ waypoint, ...distanceToRoute(waypoint, line) }))
+      .filter((x) => inWindow(x, CURATED_KM))
+      .map(({ waypoint, km, along }) => ({
+        key: waypoint.slug,
+        name: waypoint.name,
+        subtitle: `${waypointLabel[waypoint.kind]} · ${waypoint.blurb}`,
+        lat: waypoint.lat,
+        lng: waypoint.lng,
+        km,
+        along,
+        waypoint,
+      }));
+    for (const r of roadside) curatedNames.add(r.name.toLowerCase());
 
     const found: Suggestion[] = (alongQuery.data ?? [])
       .filter(
@@ -128,7 +151,9 @@ export default function AddStopScreen() {
         imageUrl: p.imageUrl,
       }));
 
-    return [...curated, ...found].sort((a, b) => a.along - b.along).slice(0, 12);
+    return [...curated, ...roadside, ...found]
+      .sort((a, b) => a.along - b.along)
+      .slice(0, MAX_SUGGESTIONS);
   }, [line, stops, forOrigin, alongQuery.data, minAlong, maxAlong]);
 
   /** Where a new stop goes: before the destination, ordered along the route if we can. */
@@ -221,7 +246,7 @@ export default function AddStopScreen() {
               category={s.story?.category}
               imageUrl={s.imageUrl}
               title={s.name}
-              subtitle={`${Math.round(s.along * totalKm)} km in · ${s.km < 1 ? 'on the route' : `${Math.round(s.km)} km off`} · ${s.subtitle}`}
+              subtitle={`${Math.round(s.along * totalKm)} km in${s.km < 1.5 ? '' : ` · ${Math.round(s.km)} km off the road`} · ${s.subtitle}`}
               onPress={() =>
                 pick(
                   {
@@ -229,7 +254,7 @@ export default function AddStopScreen() {
                     subtitle: s.subtitle.slice(0, 120),
                     lat: s.lat,
                     lng: s.lng,
-                    storySlug: s.story?.slug ?? null,
+                    storySlug: s.story?.slug ?? s.waypoint?.slug ?? null,
                   },
                   s,
                 )

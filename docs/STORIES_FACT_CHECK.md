@@ -50,3 +50,7 @@ No photos ship with the app, so `imageCredit` is empty. Place pages show a Wikip
 | [ ] | Sheldrick Wildlife Trust | Founded 1977 by Daphne Sheldrick, current visiting hour and booking rule | Sheldrick Wildlife Trust, sheldrickwildlifetrust.org |
 | [ ] | Karura Forest | Late 1990s protests led by Wangari Maathai | Friends of Karura Forest, friendsofkarura.org; Kenya Forest Service, kenyaforestservice.org |
 | [ ] | Kakamega Forest | Kenya's only tropical rainforest | Kenya Wildlife Service, kws.go.ke; Kenya Forest Service, kenyaforestservice.org |
+
+## Roadside stops (assets/stories/waypoints.json)
+
+49 short entries along the six main corridors, built by `scripts/build_waypoints.py`. Same rule as the stories: written from general knowledge, not yet checked. Coordinates are approximate. Worth a look first: the Mai Mahiu chapel date (1940s, Italian POWs), Mackinnon Road mosque, Kariandusi, Hunter's Lodge still operating, Trout Tree still operating, Kibwezi Forest access.
