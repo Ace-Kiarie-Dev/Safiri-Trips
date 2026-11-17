@@ -99,10 +99,18 @@ const stripHtml = (s) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+function commonsFileName(imageUrl) {
+  // Strips query strings and handles both URL shapes:
+  //   /wikipedia/commons/a/ab/File.jpg
+  //   /wikipedia/commons/thumb/a/ab/File.jpg/800px-File.jpg
+  const path = decodeURIComponent(new URL(imageUrl).pathname);
+  const m = /\/wikipedia\/commons\/(?:thumb\/)?[0-9a-f]\/[0-9a-f]{2}\/([^/]+)/.exec(path);
+  return m ? m[1] : null;
+}
+
 async function commonsInfo(imageUrl) {
-  const m = /\/wikipedia\/commons\/[0-9a-f]\/[0-9a-f]{2}\/([^/]+)$/.exec(imageUrl);
-  if (!m) return { reject: 'image is not on Wikimedia Commons' };
-  const file = decodeURIComponent(m[1]);
+  const file = commonsFileName(imageUrl);
+  if (!file) return { reject: 'image is not on Wikimedia Commons' };
   const data = await getJson(
     `https://commons.wikimedia.org/w/api.php?action=query&titles=File:${encodeURIComponent(file)}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=1400&format=json`,
   );
