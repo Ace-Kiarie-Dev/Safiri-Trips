@@ -2,10 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 import * as Location from 'expo-location';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
+import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
+import { FindingCard } from '@/components/FindingCard';
 import { ErrorState } from '@/components/ErrorState';
 import { ListRow } from '@/components/ListRow';
 import { PlaceRow } from '@/components/PlaceRow';
@@ -15,7 +17,7 @@ import { Skeleton } from '@/components/Skeleton';
 import { useDebounced } from '@/hooks/useDebounced';
 import { useOnline } from '@/hooks/useOnline';
 import { useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
-import { distanceToRoute, sampleAlong } from '@/lib/geo';
+import { distanceToRoute, haversineKm, sampleAlong } from '@/lib/geo';
 import { fetchAlong, fetchRoute, searchPlaces } from '@/lib/queries';
 import { categoryIcon, STORIES, type Story } from '@/lib/stories';
 import { WAYPOINTS, waypointLabel, type Waypoint } from '@/lib/waypoints';
@@ -74,8 +76,21 @@ export default function AddStopScreen() {
     queryFn: () => fetchRoute(points),
     enabled: !forOrigin && points.length >= 2,
   });
-  const line = routeQuery.data?.geometry ?? null;
-  const totalKm = (routeQuery.data?.distanceM ?? 0) / 1000;
+  // When the road route cannot be loaded, fall back to straight lines between the
+  // stops. Suggestions still work, with rougher distances and a wider corridor.
+  const approximate = !routeQuery.data && routeQuery.isError && points.length >= 2;
+  const line = useMemo<[number, number][] | null>(
+    () =>
+      routeQuery.data?.geometry ??
+      (approximate ? points.map((p) => [p.lng, p.lat] as [number, number]) : null),
+    [routeQuery.data, approximate, points],
+  );
+  const totalKm = routeQuery.data
+    ? routeQuery.data.distanceM / 1000
+    : approximate
+      ? points.slice(1).reduce((sum, p, i) => sum + haversineKm(points[i]!, p), 0)
+      : 0;
+  const destinationName = stops[stops.length - 1]?.name ?? 'your destination';
   const skipStartKm = Math.max(SKIP_START_KM, totalKm * SKIP_START_FRACTION);
   const minAlong = totalKm > 0 ? skipStartKm / totalKm : 0;
   const maxAlong = totalKm > 0 ? 1 - SKIP_END_KM / totalKm : 1;
@@ -99,8 +114,9 @@ export default function AddStopScreen() {
     if (!line || forOrigin) return [];
     const taken = new Set(stops.map((s) => s.storySlug));
     const takenNames = new Set(stops.map((s) => s.name.toLowerCase()));
+    const slack = approximate ? 2 : 1;
     const inWindow = (x: { km: number; along: number }, maxKm = ON_THE_WAY_KM) =>
-      x.km <= maxKm && x.along >= minAlong && x.along <= maxAlong;
+      x.km <= maxKm * slack && x.along >= minAlong && x.along <= maxAlong;
 
     const curated: Suggestion[] = STORIES.filter((s) => !taken.has(s.slug))
       .map((story) => ({ story, ...distanceToRoute(story, line) }))
@@ -154,7 +170,7 @@ export default function AddStopScreen() {
     return [...curated, ...roadside, ...found]
       .sort((a, b) => a.along - b.along)
       .slice(0, MAX_SUGGESTIONS);
-  }, [line, stops, forOrigin, alongQuery.data, minAlong, maxAlong]);
+  }, [line, stops, forOrigin, alongQuery.data, minAlong, maxAlong, approximate]);
 
   /** Where a new stop goes: before the destination, ordered along the route if we can. */
   const insertIndex = (place?: { lat: number; lng: number }) => {
@@ -230,15 +246,42 @@ export default function AddStopScreen() {
         </View>
       ) : null}
       <SearchBar value={query} onChangeText={setQuery} />
-      {!searching && (onTheWay.length > 0 || (alongQuery.isPending && samples.length > 0)) ? (
+      {!searching && !forOrigin && stops.length >= 1 && points.length >= 2 && !line ? (
+        <View style={styles.section}>
+          <FindingCard
+            title={`Finding stops on the way to ${destinationName}`}
+            message="Working out your road first. This takes a few seconds."
+          />
+        </View>
+      ) : null}
+      {!searching && line && onTheWay.length === 0 && alongQuery.isPending ? (
+        <View style={styles.section}>
+          <FindingCard
+            title={`Finding stops on the way to ${destinationName}`}
+            message={`Checking ${Math.round(totalKm)} km of road for places worth a stop.`}
+          />
+        </View>
+      ) : null}
+      {!searching && onTheWay.length > 0 ? (
         <View style={styles.section}>
           <View style={styles.headingRow}>
             <Icon name="car" size={18} color={c.clay} />
-            <AppText variant="headline">On the way</AppText>
+            <AppText variant="headline">On the way to {destinationName}</AppText>
           </View>
           <AppText variant="caption" tone="muted">
-            Places within {ON_THE_WAY_KM} km of the road, in driving order
+            {approximate
+              ? 'The road route did not load, so these follow a straight line and distances are rough.'
+              : 'Places near the road, in driving order'}
           </AppText>
+          {approximate ? (
+            <View style={styles.retry}>
+              <Button
+                label="Try loading the road again"
+                variant="outline"
+                onPress={() => void routeQuery.refetch()}
+              />
+            </View>
+          ) : null}
           {onTheWay.map((s) => (
             <PlaceRow
               key={s.key}
@@ -246,7 +289,7 @@ export default function AddStopScreen() {
               category={s.story?.category}
               imageUrl={s.imageUrl}
               title={s.name}
-              subtitle={`${Math.round(s.along * totalKm)} km in${s.km < 1.5 ? '' : ` · ${Math.round(s.km)} km off the road`} · ${s.subtitle}`}
+              subtitle={`${approximate ? 'About ' : ''}${Math.round(s.along * totalKm)} km in${s.km < 1.5 || approximate ? '' : ` · ${Math.round(s.km)} km off the road`} · ${s.subtitle}`}
               onPress={() =>
                 pick(
                   {
@@ -262,20 +305,17 @@ export default function AddStopScreen() {
             />
           ))}
           {alongQuery.isPending ? (
-            <AppText variant="caption" tone="muted">
-              Looking for more places along the road…
-            </AppText>
+            <View style={styles.more}>
+              <ActivityIndicator color={c.accent} />
+              <AppText variant="label" tone="muted">
+                Looking for more places along the road…
+              </AppText>
+            </View>
           ) : null}
         </View>
       ) : null}
       {!searching && !forOrigin && stops.length >= 1 && points.length >= 2 ? (
-        !line ? (
-          <AppText variant="caption" tone="muted" style={styles.section}>
-            {routeQuery.isPending
-              ? 'Working out the route to suggest places on the way…'
-              : 'Could not load the route, so on-the-way suggestions are off for now.'}
-          </AppText>
-        ) : onTheWay.length === 0 && !alongQuery.isPending ? (
+        line && onTheWay.length === 0 && !alongQuery.isPending ? (
           <AppText variant="caption" tone="muted" style={styles.section}>
             Nothing notable found along this road. Search for a town or landmark below, or pick from
             the popular places.
@@ -316,7 +356,18 @@ export default function AddStopScreen() {
       </View>
       {curated.length > 0 ? (
         <View style={styles.section}>
-          <AppText variant="title">{searching ? 'From Kenya Stories' : 'Popular places'}</AppText>
+          <AppText variant="title">
+            {searching
+              ? 'From Kenya Stories'
+              : stops.length > 0
+                ? 'Anywhere in Kenya'
+                : 'Popular places'}
+          </AppText>
+          {!searching && stops.length > 0 ? (
+            <AppText variant="caption" tone="muted">
+              Our full list, not just your route
+            </AppText>
+          ) : null}
           {curated.map((s) => (
             <ListRow
               key={s.slug}
@@ -343,6 +394,8 @@ export default function AddStopScreen() {
 const styles = StyleSheet.create({
   section: { marginTop: space.lg },
   headingRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  retry: { marginTop: space.sm },
+  more: { flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingVertical: space.md },
   sectionBottom: { marginBottom: space.lg },
   gap: { gap: space.sm },
 });

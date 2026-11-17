@@ -24,6 +24,7 @@ import { fetchRoute, fetchWeather } from '@/lib/queries';
 import { shareTrip, tripAsText } from '@/lib/share';
 import { getStory } from '@/lib/stories';
 import { routePoints } from '@/lib/tripRoute';
+import { haversineKm } from '@/lib/geo';
 import { updateTrip, type TripInput } from '@/lib/trips';
 import { tripWindow } from '@/lib/tripWeather';
 import { useSettings } from '@/state/settings';
@@ -207,8 +208,18 @@ export default function TripDetailScreen() {
       <View style={styles.summary}>
         <StatPill
           icon="car"
-          value={route ? formatDistance(route.distanceM, units) : '—'}
-          label="Distance"
+          value={
+            route
+              ? formatDistance(route.distanceM, units)
+              : routeQuery.isError && points.length >= 2
+                ? `~${formatDistance(
+                    points.slice(1).reduce((sum, p, i) => sum + haversineKm(points[i]!, p), 0) *
+                      1000,
+                    units,
+                  )}`
+                : '—'
+          }
+          label={!route && routeQuery.isError ? 'Straight line' : 'Distance'}
         />
         <StatPill
           icon="clock"
