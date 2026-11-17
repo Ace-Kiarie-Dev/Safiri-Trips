@@ -7,6 +7,7 @@ import { captureRef } from 'react-native-view-shot';
 import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { IconButton } from '@/components/IconButton';
+import { savePng, slugify } from '@/lib/saveImage';
 import type { RouteData } from '@/lib/schemas';
 import type { Stop, Trip } from '@/lib/trips';
 import { useSettings } from '@/state/settings';
@@ -30,12 +31,31 @@ export function SharePreview({ visible, onClose, trip, stops, route }: Props) {
   const card = useRef<ComponentRef<typeof View>>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
+
+  const capture = () => captureRef(card, { format: 'png', quality: 1, result: 'tmpfile' });
+
+  const save = async () => {
+    setError(null);
+    setSaved(null);
+    setBusy(true);
+    try {
+      const result = await savePng(await capture(), `safiri-${slugify(trip.title)}`);
+      if (result.ok) setSaved(`Saved to ${result.folder} as ${result.name}`);
+      else if (!result.canceled) setError('Could not save the picture. Try again.');
+    } catch {
+      setError('Could not save the picture. Try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const share = async () => {
     setError(null);
+    setSaved(null);
     setBusy(true);
     try {
-      const uri = await captureRef(card, { format: 'png', quality: 1, result: 'tmpfile' });
+      const uri = await capture();
       if (!(await Sharing.isAvailableAsync())) {
         setError('Sharing is not available on this phone.');
         return;
@@ -69,12 +89,32 @@ export function SharePreview({ visible, onClose, trip, stops, route }: Props) {
               {error}
             </AppText>
           ) : null}
-          <Button
-            label={busy ? 'Preparing…' : 'Share picture'}
-            icon="share"
-            disabled={busy}
-            onPress={() => void share()}
-          />
+          {saved ? (
+            <AppText variant="caption" tone="primary" accessibilityLiveRegion="polite">
+              {saved}
+            </AppText>
+          ) : null}
+          <View style={styles.buttons}>
+            <Button
+              flex={1}
+              variant="outline"
+              label="Save to phone"
+              icon="download"
+              disabled={busy}
+              onPress={() => void save()}
+            />
+            <Button
+              flex={1}
+              label={busy ? 'Preparing…' : 'Share'}
+              icon="share"
+              disabled={busy}
+              onPress={() => void share()}
+            />
+          </View>
+          <AppText variant="micro" tone="muted" style={styles.hint}>
+            The first save asks you to pick a folder, such as Pictures. After that it saves straight
+            there.
+          </AppText>
         </View>
       </View>
     </Modal>
@@ -94,4 +134,5 @@ const styles = StyleSheet.create({
   scroll: { alignItems: 'center', padding: space.lg, gap: space.md },
   hint: { textAlign: 'center' },
   actions: { paddingHorizontal: space.lg, gap: space.sm },
+  buttons: { flexDirection: 'row', gap: space.md },
 });

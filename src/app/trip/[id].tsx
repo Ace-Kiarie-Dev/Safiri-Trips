@@ -10,6 +10,7 @@ import { Segmented } from '@/components/Segmented';
 import { Skeleton } from '@/components/Skeleton';
 import { StatPill } from '@/components/StatPill';
 import { PackingTab } from '@/features/trip/PackingTab';
+import { ShareChooser } from '@/features/trip/ShareChooser';
 import { SharePreview } from '@/features/trip/SharePreview';
 import { StopsTab } from '@/features/trip/StopsTab';
 import { TripActions } from '@/features/trip/TripActions';
@@ -45,6 +46,7 @@ export default function TripDetailScreen() {
   const [tab, setTab] = useState<TabId>('stops');
   const [editing, setEditing] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [choosing, setChoosing] = useState(false);
 
   const trip = useTrip(id);
   const stopsQuery = useStops(id);
@@ -177,26 +179,26 @@ export default function TripDetailScreen() {
             icon="share"
             label="Share trip"
             disabled={stops.length === 0}
-            onPress={() =>
-              Alert.alert(
-                'Share this trip',
-                'As a picture for WhatsApp or Instagram, or as text?',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Text',
-                    onPress: () => void shareTrip(tripAsText(data, stops, route, units)),
-                  },
-                  { text: 'Picture', onPress: () => setSharing(true) },
-                ],
-              )
-            }
+            onPress={() => setChoosing(true)}
           />
           <IconButton icon="settings" label="Edit trip" onPress={() => setEditing(true)} />
           <IconButton icon="trash" label="Delete trip" onPress={confirmDelete} />
         </>
       }
     >
+      <ShareChooser
+        visible={choosing}
+        tripTitle={data.title}
+        onClose={() => setChoosing(false)}
+        onPicture={() => {
+          setChoosing(false);
+          setSharing(true);
+        }}
+        onText={() => {
+          setChoosing(false);
+          void shareTrip(tripAsText(data, stops, route, units));
+        }}
+      />
       <SharePreview
         visible={sharing}
         onClose={() => setSharing(false)}

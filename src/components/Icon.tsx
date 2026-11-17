@@ -31,7 +31,8 @@ export type IconName =
   | 'home'
   | 'clock'
   | 'wind'
-  | 'sunrise';
+  | 'sunrise'
+  | 'camera';
 
 type Props = { name: IconName; size?: number; color: string };
 
@@ -186,6 +187,13 @@ function glyph(name: IconName) {
         <>
           <Path d="M12 10V3M9 6l3-3 3 3M3 17h18M5 21h14" />
           <Path d="M6 17a6 6 0 0 1 12 0" />
+        </>
+      );
+    case 'camera':
+      return (
+        <>
+          <Path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+          <Circle cx={12} cy={13} r={3.5} />
         </>
       );
   }

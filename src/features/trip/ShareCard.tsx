@@ -2,7 +2,7 @@ import type { ComponentRef, Ref } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
-import { Icon } from '@/components/Icon';
+import { LogoTile } from '@/components/LogoTile';
 import { StoryPhoto } from '@/components/StoryPhoto';
 import { formatDay, formatDistance, formatDurationShort } from '@/lib/format';
 import type { RouteData } from '@/lib/schemas';
@@ -42,9 +42,7 @@ export function ShareCard({ trip, stops, route, units, cardRef }: Props) {
     <View ref={cardRef} collapsable={false} style={styles.card}>
       <View style={styles.header}>
         <View style={styles.brand}>
-          <View style={styles.mark}>
-            <Icon name="map" size={16} color={c.ink} />
-          </View>
+          <LogoTile size={30} />
           <AppText variant="label" style={styles.brandText}>
             Safiri Trips
           </AppText>
@@ -167,14 +165,6 @@ const styles = StyleSheet.create({
     backgroundColor: c.primary,
   },
   brand: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  mark: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
-    backgroundColor: c.gold,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   brandText: { color: c.onPrimary },
   photos: { flexDirection: 'row', gap: 3, height: 150 },
   photo: { flex: 1 },
