@@ -8,14 +8,15 @@ import { AppText } from '@/components/AppText';
 import { EmptyState } from '@/components/EmptyState';
 import { ErrorState } from '@/components/ErrorState';
 import { ListRow } from '@/components/ListRow';
+import { PlaceRow } from '@/components/PlaceRow';
 import { Screen } from '@/components/Screen';
 import { SearchBar } from '@/components/SearchBar';
 import { Skeleton } from '@/components/Skeleton';
 import { useDebounced } from '@/hooks/useDebounced';
 import { useOnline } from '@/hooks/useOnline';
 import { useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
-import { distanceToRoute, haversineKm } from '@/lib/geo';
-import { fetchRoute, searchPlaces } from '@/lib/queries';
+import { distanceToRoute, sampleAlong } from '@/lib/geo';
+import { fetchAlong, fetchRoute, searchPlaces } from '@/lib/queries';
 import { categoryIcon, STORIES, type Story } from '@/lib/stories';
 import { routePoints } from '@/lib/tripRoute';
 import { addStop, setTripOrigin, type NewStop } from '@/lib/trips';
@@ -24,8 +25,23 @@ import { useColors } from '@/theme/useColors';
 import { space } from '@/theme/tokens';
 
 const ON_THE_WAY_KM = 15;
-/** Places this close to the start are not a stop on the way, they are home. */
-const SKIP_FROM_START_KM = 20;
+/** The first stretch of a drive is home turf, not a stop. Whichever is larger applies. */
+const SKIP_START_KM = 30;
+const SKIP_START_FRACTION = 0.12;
+const SKIP_END_KM = 5;
+const SAMPLE_EVERY_KM = 35;
+
+type Suggestion = {
+  key: string;
+  name: string;
+  subtitle: string;
+  lat: number;
+  lng: number;
+  km: number;
+  along: number;
+  story?: Story;
+  imageUrl?: string | null;
+};
 
 /**
  * Search or pick a curated place. One tap adds it as a stop, or sets it as the
@@ -54,28 +70,73 @@ export default function AddStopScreen() {
   });
   const line = routeQuery.data?.geometry ?? null;
   const totalKm = (routeQuery.data?.distanceM ?? 0) / 1000;
+  const skipStartKm = Math.max(SKIP_START_KM, totalKm * SKIP_START_FRACTION);
+  const minAlong = totalKm > 0 ? skipStartKm / totalKm : 0;
+  const maxAlong = totalKm > 0 ? 1 - SKIP_END_KM / totalKm : 1;
+
+  const samples = useMemo(
+    () => (line ? sampleAlong(line, SAMPLE_EVERY_KM, skipStartKm, SKIP_END_KM) : []),
+    [line, skipStartKm],
+  );
+  const alongQuery = useQuery({
+    queryKey: ['along', samples.map((p) => `${p.lat.toFixed(2)},${p.lng.toFixed(2)}`).join('|')],
+    queryFn: () => fetchAlong(samples),
+    enabled: !forOrigin && samples.length > 0,
+  });
 
   /**
-   * Curated places near the route line, in driving order. Places around the
-   * start point are left out: nobody wants a stop 4 km from home on a 230 km drive.
+   * Places along the route in driving order: our curated stories when they are
+   * in the corridor, plus notable places Wikipedia knows about. The first
+   * stretch of the drive and the destination's own area are left out.
    */
-  const onTheWay = useMemo(() => {
+  const onTheWay = useMemo<Suggestion[]>(() => {
     if (!line || forOrigin) return [];
     const taken = new Set(stops.map((s) => s.storySlug));
-    const start = trip.data?.origin ?? (points.length > 0 ? points[0] : null);
-    return STORIES.filter((s) => !taken.has(s.slug))
-      .filter((s) => !start || haversineKm(s, start) > SKIP_FROM_START_KM)
+    const takenNames = new Set(stops.map((s) => s.name.toLowerCase()));
+    const inWindow = (x: { km: number; along: number }) =>
+      x.km <= ON_THE_WAY_KM && x.along >= minAlong && x.along <= maxAlong;
+
+    const curated: Suggestion[] = STORIES.filter((s) => !taken.has(s.slug))
       .map((story) => ({ story, ...distanceToRoute(story, line) }))
-      .filter((x) => x.km <= ON_THE_WAY_KM)
-      .sort((a, b) => a.along - b.along);
-  }, [line, stops, forOrigin, trip.data?.origin, points]);
+      .filter(inWindow)
+      .map(({ story, km, along }) => ({
+        key: story.slug,
+        name: story.name,
+        subtitle: story.region,
+        lat: story.lat,
+        lng: story.lng,
+        km,
+        along,
+        story,
+      }));
+    const curatedNames = new Set(curated.map((c) => c.name.toLowerCase()));
+
+    const found: Suggestion[] = (alongQuery.data ?? [])
+      .filter(
+        (p) => !takenNames.has(p.name.toLowerCase()) && !curatedNames.has(p.name.toLowerCase()),
+      )
+      .map((p) => ({ p, ...distanceToRoute(p, line) }))
+      .filter(inWindow)
+      .map(({ p, km, along }) => ({
+        key: p.id,
+        name: p.name,
+        subtitle: p.description || 'Notable place',
+        lat: p.lat,
+        lng: p.lng,
+        km,
+        along,
+        imageUrl: p.imageUrl,
+      }));
+
+    return [...curated, ...found].sort((a, b) => a.along - b.along).slice(0, 12);
+  }, [line, stops, forOrigin, alongQuery.data, minAlong, maxAlong]);
 
   /** Where a new stop goes: before the destination, ordered along the route if we can. */
-  const insertIndex = (story?: Story) => {
+  const insertIndex = (place?: { lat: number; lng: number }) => {
     if (stops.length === 0) return undefined;
     const intermediate = stops.slice(0, -1);
-    if (!story || !line) return intermediate.length;
-    const here = distanceToRoute(story, line).along;
+    if (!place || !line) return intermediate.length;
+    const here = distanceToRoute(place, line).along;
     return intermediate.filter((s) => distanceToRoute(s, line).along < here).length;
   };
   const [query, setQuery] = useState('');
@@ -93,8 +154,8 @@ export default function AddStopScreen() {
     if (forOrigin) await setTripOrigin(tripId, { name: stop.name, lat: stop.lat, lng: stop.lng });
     else await addStop(tripId, stop, at);
   });
-  const pick = (stop: NewStop, story?: Story) =>
-    save.mutate({ stop, at: insertIndex(story) }, { onSuccess: () => router.back() });
+  const pick = (stop: NewStop, place?: { lat: number; lng: number }) =>
+    save.mutate({ stop, at: insertIndex(place) }, { onSuccess: () => router.back() });
 
   const locateMe = async () => {
     setNote(null);
@@ -144,35 +205,42 @@ export default function AddStopScreen() {
         </View>
       ) : null}
       <SearchBar value={query} onChangeText={setQuery} />
-      {!searching && onTheWay.length > 0 ? (
+      {!searching && (onTheWay.length > 0 || (alongQuery.isPending && samples.length > 0)) ? (
         <View style={styles.section}>
           <View style={styles.headingRow}>
             <Icon name="car" size={18} color={c.clay} />
             <AppText variant="headline">On the way</AppText>
           </View>
           <AppText variant="caption" tone="muted">
-            Curated places within {ON_THE_WAY_KM} km of your route
+            Places within {ON_THE_WAY_KM} km of the road, in driving order
           </AppText>
-          {onTheWay.map(({ story, km, along }) => (
-            <ListRow
-              key={story.slug}
-              icon={categoryIcon[story.category]}
-              title={story.name}
-              subtitle={`${Math.round(along * totalKm)} km into the drive · ${km < 1 ? 'on the route' : `${Math.round(km)} km off route`}`}
+          {onTheWay.map((s) => (
+            <PlaceRow
+              key={s.key}
+              slug={s.story?.slug}
+              category={s.story?.category}
+              imageUrl={s.imageUrl}
+              title={s.name}
+              subtitle={`${Math.round(s.along * totalKm)} km in · ${s.km < 1 ? 'on the route' : `${Math.round(s.km)} km off`} · ${s.subtitle}`}
               onPress={() =>
                 pick(
                   {
-                    name: story.name,
-                    subtitle: story.region,
-                    lat: story.lat,
-                    lng: story.lng,
-                    storySlug: story.slug,
+                    name: s.name,
+                    subtitle: s.subtitle.slice(0, 120),
+                    lat: s.lat,
+                    lng: s.lng,
+                    storySlug: s.story?.slug ?? null,
                   },
-                  story,
+                  s,
                 )
               }
             />
           ))}
+          {alongQuery.isPending ? (
+            <AppText variant="caption" tone="muted">
+              Looking for more places along the road…
+            </AppText>
+          ) : null}
         </View>
       ) : null}
       {!searching && !forOrigin && stops.length >= 1 && points.length >= 2 ? (
@@ -182,10 +250,10 @@ export default function AddStopScreen() {
               ? 'Working out the route to suggest places on the way…'
               : 'Could not load the route, so on-the-way suggestions are off for now.'}
           </AppText>
-        ) : onTheWay.length === 0 ? (
+        ) : onTheWay.length === 0 && !alongQuery.isPending ? (
           <AppText variant="caption" tone="muted" style={styles.section}>
-            None of our curated places sit along this route. Search for a town or landmark below, or
-            pick from the popular places.
+            Nothing notable found along this road. Search for a town or landmark below, or pick from
+            the popular places.
           </AppText>
         ) : null
       ) : null}

@@ -7,6 +7,7 @@
 | Weather, air quality | Open-Meteo | proxy `/api/weather` | Free tier is non-commercial. Keep v1 ad free. Move to a paid plan before adding AdMob in v1.1. |
 | Nearby | Overpass, Wikipedia geosearch fallback | proxy `/api/nearby` | Small radius query, capped at 40 results, cached for a day. The public Overpass instances are often at capacity and say so in their error, so when both mirrors fail the proxy answers with nearby Wikipedia articles instead (cached one hour so Overpass is retried later). The response carries `source: "osm"` or `"wikipedia"`. |
 | Place summaries | Wikipedia REST | proxy `/api/place` | Text CC BY-SA, credited in app. |
+| Places along a route | Wikipedia geosearch | proxy `/api/along` | The app samples the route every ~35 km (skipping the first 30 km or 12%) and the proxy asks Wikipedia for notable places near each sample, keeping only attraction-like pages by their short description. Thumbnails load from Wikimedia. |
 | Map tiles | OpenFreeMap (Liberty style) | app, direct | No key. Attribution is shown on the map by MapLibre and in Attributions. |
 
 ## Open item: offline map packs

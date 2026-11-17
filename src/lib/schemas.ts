@@ -47,6 +47,17 @@ export const nearbyPlaceSchema = z.object({
 export type NearbyPlace = z.infer<typeof nearbyPlaceSchema>;
 export const nearbyResponseSchema = z.object({ places: z.array(nearbyPlaceSchema) });
 
+export const alongPlaceSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  lat: z.number(),
+  lng: z.number(),
+  imageUrl: z.string().nullable(),
+});
+export type AlongPlace = z.infer<typeof alongPlaceSchema>;
+export const alongResponseSchema = z.object({ places: z.array(alongPlaceSchema) });
+
 export const wikiPlaceSchema = z.object({
   title: z.string(),
   extract: z.string(),

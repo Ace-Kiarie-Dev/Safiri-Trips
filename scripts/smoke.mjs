@@ -36,6 +36,18 @@ const CHECKS = [
     show: (d) => d.place?.title ?? 'no match',
   },
   {
+    name: 'along  ',
+    path: '/api/along',
+    body: {
+      points: [
+        { lat: -2.0, lng: 37.3 },
+        { lat: -2.3, lng: 37.6 },
+      ],
+    },
+    expect: (d) => Array.isArray(d.places),
+    show: (d) => `${d.places.length} places, e.g. ${d.places[0]?.name ?? 'none'}`,
+  },
+  {
     name: 'route  ',
     path: '/api/route',
     body: {

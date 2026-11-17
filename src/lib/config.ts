@@ -16,4 +16,5 @@ export const TTL = {
   nearby: 7 * 24 * 60 * 60 * 1000,
   place: 30 * 24 * 60 * 60 * 1000,
   search: 24 * 60 * 60 * 1000,
+  along: 7 * 24 * 60 * 60 * 1000,
 } as const;

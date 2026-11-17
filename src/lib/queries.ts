@@ -2,6 +2,7 @@ import { apiGet, apiPost } from './api';
 import { cachedFetch } from './cache';
 import { TTL } from './config';
 import {
+  alongResponseSchema,
   nearbyResponseSchema,
   placeResponseSchema,
   routeResponseSchema,
@@ -20,6 +21,7 @@ export const cacheKeys = {
   nearby: (p: Point) => `nearby:${r3(p.lat)},${r3(p.lng)}`,
   place: (p: Point, name?: string) => `place:${name ?? `${r3(p.lat)},${r3(p.lng)}`}`,
   route: (points: Point[]) => `route:${points.map((p) => `${r3(p.lat)},${r3(p.lng)}`).join('|')}`,
+  along: (points: Point[]) => `along:${points.map((p) => `${r2(p.lat)},${r2(p.lng)}`).join('|')}`,
 };
 
 export const searchPlaces = (q: string) =>
@@ -55,6 +57,21 @@ export const fetchWikiPlace = (lat: number, lng: number, name?: string) =>
           placeResponseSchema,
         )
       ).place,
+  );
+
+/** Notable places near a handful of sample points along a route. */
+export const fetchAlong = (points: Point[]) =>
+  cachedFetch(
+    cacheKeys.along(points),
+    TTL.route,
+    async () =>
+      (
+        await apiPost(
+          '/api/along',
+          { points: points.map((p) => ({ lat: Number(r2(p.lat)), lng: Number(r2(p.lng)) })) },
+          alongResponseSchema,
+        )
+      ).places,
   );
 
 export const fetchRoute = (points: Point[]) =>

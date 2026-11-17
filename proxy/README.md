@@ -9,6 +9,7 @@ Thin Vercel functions in front of every third party API, so the app ships with n
 | `GET /api/weather?lat=&lng=` | Open-Meteo forecast and air quality | 1 hour |
 | `GET /api/nearby?lat=&lng=&radius=` | Overpass | 1 day |
 | `GET /api/place?lat=&lng=&name=` | Wikipedia | 1 day |
+| `POST /api/along` `{ points: [{lat,lng}] }` | Wikipedia geosearch at each sample point, filtered to attractions | 1 day |
 
 ## Deploy
 

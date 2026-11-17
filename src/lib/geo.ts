@@ -14,6 +14,38 @@ export function haversineKm(a: Point, b: Point): number {
 }
 
 /**
+ * Points spaced roughly `everyKm` apart along a line, skipping the first and
+ * last stretch. Used to ask for places along a route without flooding the API.
+ */
+export function sampleAlong(
+  line: LngLat[],
+  everyKm: number,
+  skipStartKm: number,
+  skipEndKm: number,
+  max = 8,
+): Point[] {
+  if (line.length < 2) return [];
+  const cum: number[] = [0];
+  for (let i = 1; i < line.length; i++) {
+    const [lng1, lat1] = line[i - 1]!;
+    const [lng2, lat2] = line[i]!;
+    cum.push(cum[i - 1]! + haversineKm({ lat: lat1, lng: lng1 }, { lat: lat2, lng: lng2 }));
+  }
+  const total = cum[cum.length - 1]!;
+  const usable = total - skipStartKm - skipEndKm;
+  if (usable <= 0) return [];
+  const step = Math.max(everyKm, usable / max);
+  const out: Point[] = [];
+  let j = 0;
+  for (let d = skipStartKm + step / 2; d < total - skipEndKm && out.length < max; d += step) {
+    while (j < cum.length - 1 && cum[j + 1]! < d) j++;
+    const [lng, lat] = line[j]!;
+    out.push({ lat, lng });
+  }
+  return out;
+}
+
+/**
  * Nearest distance from a point to a route line, and how far along the line
  * that nearest spot is (0 at the start, 1 at the end). Uses an equirectangular
  * projection, which is plenty accurate at the scale of a road trip.
