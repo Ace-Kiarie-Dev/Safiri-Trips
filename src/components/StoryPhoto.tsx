@@ -14,7 +14,10 @@ type Props = {
   iconSize?: number;
 };
 
-/** A place photo with a warm, on brand fallback when no photo exists. Fills its parent. */
+/**
+ * A place photo with a warm, on brand fallback when no photo exists. Absolutely fills
+ * its parent, so the parent must have a size. The photo can never inflate a layout.
+ */
 export function StoryPhoto({ slug, category, uri, label, iconSize = 32 }: Props) {
   const c = useColors();
   const bundled = getStoryImage(slug);
@@ -49,6 +52,6 @@ export function StoryPhoto({ slug, category, uri, label, iconSize = 32 }: Props)
 }
 
 const styles = StyleSheet.create({
-  fill: { width: '100%', height: '100%' },
+  fill: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0 },
   center: { alignItems: 'center', justifyContent: 'center' },
 });

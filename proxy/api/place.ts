@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { guarded, json, lat, lng, upstream } from "../lib/http.js";
+import { z } from 'zod';
+import { guarded, json, lat, lng, upstream } from '../lib/http.js';
 
 const schema = z.object({ lat, lng, name: z.string().trim().max(80).optional() });
 
@@ -30,7 +30,7 @@ export const GET = guarded(schema, async ({ lat, lng, name }) => {
   try {
     const s = summary.parse(
       await upstream(
-        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replaceAll(" ", "_"))}`,
+        `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title.replaceAll(' ', '_'))}`,
       ),
     );
     return json(

@@ -13,6 +13,15 @@ export function formatDuration(seconds: number): string {
   return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }
 
+/** "3h 57m", for tight spaces like the stat pills. */
+export function formatDurationShort(seconds: number): string {
+  const mins = Math.round(seconds / 60);
+  if (mins < 60) return `${mins}m`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m === 0 ? `${h}h` : `${h}h ${m}m`;
+}
+
 export function formatTemp(celsius: number, units: Units): string {
   return units === 'imperial'
     ? `${Math.round((celsius * 9) / 5 + 32)}°F`

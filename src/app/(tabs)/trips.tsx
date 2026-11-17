@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     paddingRight: space.xs,
     ...shadow.card,
   },
-  cover: { width: 104, alignSelf: 'stretch' },
+  cover: { width: 104, height: 112, alignSelf: 'stretch' },
   body: { flex: 1, padding: space.lg, gap: space.xs, justifyContent: 'center' },
   hint: { textAlign: 'center', marginTop: space.xs },
 });

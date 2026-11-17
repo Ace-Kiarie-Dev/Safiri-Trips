@@ -1,16 +1,16 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const USER_AGENT = "SafiriTrips/1.0 (+https://nesturex.com; hello@nesturex.com)";
+export const USER_AGENT = 'SafiriTrips/1.0 (+https://nesturex.com; hello@nesturex.com)';
 
 /** Only these upstream hosts may ever be contacted. Blocks open-proxy and SSRF abuse. */
 const ALLOWED_HOSTS = new Set([
-  "nominatim.openstreetmap.org",
-  "api.heigit.org",
-  "api.open-meteo.com",
-  "air-quality-api.open-meteo.com",
-  "overpass-api.de",
-  "overpass.private.coffee",
-  "en.wikipedia.org",
+  'nominatim.openstreetmap.org',
+  'api.heigit.org',
+  'api.open-meteo.com',
+  'air-quality-api.open-meteo.com',
+  'overpass-api.de',
+  'overpass.private.coffee',
+  'en.wikipedia.org',
 ]);
 
 const WINDOW_MS = 60_000;
@@ -19,7 +19,7 @@ const hits = new Map<string, { count: number; resetAt: number }>();
 
 /** Best-effort per-instance limiter. Vercel's firewall rules should back this up. */
 function limited(request: Request): boolean {
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
   const now = Date.now();
   const entry = hits.get(ip);
   if (!entry || entry.resetAt < now) {
@@ -35,10 +35,10 @@ export function json(body: unknown, status = 200, cacheSeconds = 0): Response {
   const cache =
     status === 200 && cacheSeconds > 0
       ? `public, s-maxage=${cacheSeconds}, stale-while-revalidate=${cacheSeconds * 4}`
-      : "no-store";
+      : 'no-store';
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", "Cache-Control": cache },
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': cache },
   });
 }
 
@@ -50,30 +50,30 @@ type Handler<T> = (input: T, request: Request) => Promise<Response>;
 export function guarded<S extends z.ZodType>(
   schema: S,
   handler: Handler<z.infer<S>>,
-  source: "query" | "body" = "query",
+  source: 'query' | 'body' = 'query',
 ) {
   return async (request: Request): Promise<Response> => {
-    if (limited(request)) return fail(429, "Too many requests");
+    if (limited(request)) return fail(429, 'Too many requests');
     try {
       let raw: unknown;
-      if (source === "query") {
+      if (source === 'query') {
         raw = Object.fromEntries(new URL(request.url).searchParams);
       } else {
         const text = await request.text();
-        if (text.length > 8_000) return fail(413, "Request too large");
+        if (text.length > 8_000) return fail(413, 'Request too large');
         raw = JSON.parse(text);
       }
       const parsed = schema.safeParse(raw);
-      if (!parsed.success) return fail(400, "Invalid request");
+      if (!parsed.success) return fail(400, 'Invalid request');
       return await handler(parsed.data, request);
     } catch (e) {
-      const detail = e instanceof Error ? e.message : "unknown error";
+      const detail = e instanceof Error ? e.message : 'unknown error';
       // Server side log: path and message only, no query text and no coordinates.
       console.error(`${new URL(request.url).pathname} ${detail}`);
       // TEMPORARY: detail is returned to the caller so failures can be
       // diagnosed from the smoke test. Revert to a generic message before
       // release (tracked in docs/RELEASE_CHECKLIST.md).
-      return json({ error: "Upstream unavailable", detail }, 502);
+      return json({ error: 'Upstream unavailable', detail }, 502);
     }
   };
 }
@@ -84,14 +84,14 @@ export async function upstream(
   timeoutMs = 15_000,
 ): Promise<unknown> {
   const host = new URL(url).hostname;
-  if (!ALLOWED_HOSTS.has(host)) throw new Error("host not allowed");
+  if (!ALLOWED_HOSTS.has(host)) throw new Error('host not allowed');
   const res = await fetch(url, {
     ...init,
-    headers: { "User-Agent": USER_AGENT, Accept: "application/json", ...init.headers },
+    headers: { 'User-Agent': USER_AGENT, Accept: 'application/json', ...init.headers },
     signal: AbortSignal.timeout(timeoutMs),
   });
   if (!res.ok) {
-    const detail = (await res.text().catch(() => "")).slice(0, 200).replace(/\s+/g, " ");
+    const detail = (await res.text().catch(() => '')).slice(0, 200).replace(/\s+/g, ' ');
     throw new Error(`upstream ${host} ${res.status} ${detail}`);
   }
   return res.json();

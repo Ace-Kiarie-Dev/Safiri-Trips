@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { guarded, json, lat, lng, upstream } from "../lib/http.js";
+import { z } from 'zod';
+import { guarded, json, lat, lng, upstream } from '../lib/http.js';
 
 export const maxDuration = 30;
 
@@ -31,7 +31,7 @@ const geosearch = z.object({
   }),
 });
 
-const KINDS = ["tourism", "amenity", "historic", "natural"] as const;
+const KINDS = ['tourism', 'amenity', 'historic', 'natural'] as const;
 
 /**
  * Selective tag first, then name. Anchored regexes so Overpass can use its tag
@@ -46,14 +46,14 @@ const FILTERS = [
 
 /** Public Overpass instances are often at capacity. Try two, then give up on Overpass. */
 const MIRRORS = [
-  "https://overpass.private.coffee/api/interpreter",
-  "https://overpass-api.de/api/interpreter",
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
 ];
 
 async function fromOverpass(la: number, lo: number, radius: number): Promise<Place[]> {
   const around = `(around:${radius},${la},${lo})`;
-  const query = `[out:json][timeout:15];(${FILTERS.map((f) => `nwr${around}${f}["name"];`).join(
-    "",
+  const query = `[out:json][timeout:4];(${FILTERS.map((f) => `nwr${around}${f}["name"];`).join(
+    '',
   )});out center 40;`;
   const errors: string[] = [];
   for (const mirror of MIRRORS) {
@@ -62,11 +62,11 @@ async function fromOverpass(la: number, lo: number, radius: number): Promise<Pla
         await upstream(
           mirror,
           {
-            method: "POST",
+            method: 'POST',
             body: new URLSearchParams({ data: query }).toString(),
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           },
-          12_000,
+          5_000,
         ),
       );
       return data.elements.flatMap((e) => {
@@ -75,14 +75,14 @@ async function fromOverpass(la: number, lo: number, radius: number): Promise<Pla
         const pLat = e.lat ?? e.center?.lat;
         const pLng = e.lon ?? e.center?.lon;
         if (!name || pLat === undefined || pLng === undefined) return [];
-        const kind = KINDS.map((k) => t[k]).find(Boolean) ?? "place";
+        const kind = KINDS.map((k) => t[k]).find(Boolean) ?? 'place';
         return [{ id: String(e.id), name, kind, lat: pLat, lng: pLng }];
       });
     } catch (e) {
-      errors.push(e instanceof Error ? e.message.slice(0, 80) : "unknown");
+      errors.push(e instanceof Error ? e.message.slice(0, 80) : 'unknown');
     }
   }
-  throw new Error(`overpass: ${errors.join(" | ")}`);
+  throw new Error(`overpass: ${errors.join(' | ')}`);
 }
 
 /** Notable places with a Wikipedia article. Thinner than OSM, but reliably available. */
@@ -94,7 +94,7 @@ async function fromWikipedia(la: number, lo: number, radius: number): Promise<Pl
   return data.query.geosearch.map((g) => ({
     id: `wiki-${g.pageid}`,
     name: g.title,
-    kind: "landmark",
+    kind: 'landmark',
     lat: g.lat,
     lng: g.lon,
   }));
@@ -103,10 +103,16 @@ async function fromWikipedia(la: number, lo: number, radius: number): Promise<Pl
 export const GET = guarded(schema, async ({ lat, lng, radius }) => {
   const la = Number(lat.toFixed(3));
   const lo = Number(lng.toFixed(3));
+  // Both start at once. Overpass gets about ten seconds across its two mirrors;
+  // Wikipedia is usually back in one, so the fallback costs nothing extra.
+  const wiki = fromWikipedia(la, lo, radius).catch(() => null);
   try {
-    return json({ places: await fromOverpass(la, lo, radius), source: "osm" }, 200, 86_400);
-  } catch {
+    const places = await fromOverpass(la, lo, radius);
+    return json({ places, source: 'osm' }, 200, 86_400);
+  } catch (overpassError) {
+    const places = await wiki;
+    if (!places) throw overpassError;
     // Shorter cache so Overpass gets another chance once it has calmed down.
-    return json({ places: await fromWikipedia(la, lo, radius), source: "wikipedia" }, 200, 3600);
+    return json({ places, source: 'wikipedia' }, 200, 3600);
   }
 });

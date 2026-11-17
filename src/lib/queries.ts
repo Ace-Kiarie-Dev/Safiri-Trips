@@ -39,7 +39,8 @@ export const fetchNearby = (lat: number, lng: number) =>
     cacheKeys.nearby({ lat, lng }),
     TTL.nearby,
     async () =>
-      (await apiGet('/api/nearby', { lat: r3(lat), lng: r3(lng) }, nearbyResponseSchema)).places,
+      (await apiGet('/api/nearby', { lat: r3(lat), lng: r3(lng) }, nearbyResponseSchema, 25_000))
+        .places,
   );
 
 export const fetchWikiPlace = (lat: number, lng: number, name?: string) =>

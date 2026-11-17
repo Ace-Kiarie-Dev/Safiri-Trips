@@ -39,7 +39,7 @@ export default function OnboardingScreen() {
 
   const finish = () => {
     void setOnboarded();
-    router.replace('/discover');
+    router.replace('/');
   };
 
   return (

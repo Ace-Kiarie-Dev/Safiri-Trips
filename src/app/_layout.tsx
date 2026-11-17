@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { queryClient } from '@/lib/queryClient';
 import { useSettings } from '@/state/settings';
+import { useScheme } from '@/theme/useColors';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -23,6 +24,7 @@ export default function RootLayout() {
   });
 
   const ready = useSettings((s) => s.ready);
+  const scheme = useScheme();
   const load = useSettings((s) => s.load);
   const fontsDone = loaded || !!error;
 
@@ -39,7 +41,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <QueryClientProvider client={queryClient}>
-        <StatusBar style="auto" />
+        <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
         <Stack screenOptions={{ headerShown: false }} />
       </QueryClientProvider>
     </GestureHandlerRootView>

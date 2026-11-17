@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { guarded, json, lat, lng, upstream } from "../lib/http.js";
+import { z } from 'zod';
+import { guarded, json, lat, lng, upstream } from '../lib/http.js';
 
 const schema = z.object({ lat, lng });
 
@@ -40,8 +40,8 @@ export const GET = guarded(schema, async ({ lat, lng }) => {
     minC: d.temperature_2m_min[i] ?? 0,
     rainPct: d.precipitation_probability_max[i] ?? 0,
     rainMm: d.precipitation_sum[i] ?? 0,
-    sunrise: d.sunrise[i] ?? "",
-    sunset: d.sunset[i] ?? "",
+    sunrise: d.sunrise[i] ?? '',
+    sunset: d.sunset[i] ?? '',
     uv: d.uv_index_max[i] ?? 0,
   }));
   return json({ days, aqi: aqi?.success ? aqi.data.current.us_aqi : null }, 200, 3600);

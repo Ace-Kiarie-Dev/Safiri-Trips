@@ -13,7 +13,7 @@ import { cacheClear } from '@/lib/cache';
 import { PRIVACY_URL } from '@/lib/config';
 import { formatBytes, offlineStorageBytes } from '@/lib/offline';
 import { deleteAllData } from '@/lib/wipe';
-import { useSettings, type Units } from '@/state/settings';
+import { useSettings, type ThemePref, type Units } from '@/state/settings';
 import { radius, shadow, space } from '@/theme/tokens';
 import { useColors } from '@/theme/useColors';
 
@@ -23,6 +23,12 @@ const LINKS: { icon: IconName; label: string; value: string; url: string }[] = [
   { icon: 'pin', label: 'Instagram', value: '@nesture_x', url: 'https://instagram.com/nesture_x' },
   { icon: 'pin', label: 'X', value: '@Nesturex', url: 'https://x.com/Nesturex' },
 ];
+
+const THEME_OPTIONS = [
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+  { id: 'system', label: 'System' },
+] as const satisfies readonly { id: ThemePref; label: string }[];
 
 const UNIT_OPTIONS = [
   { id: 'metric', label: 'km and °C' },
@@ -35,6 +41,8 @@ export default function SettingsScreen() {
   const qc = useQueryClient();
   const units = useSettings((s) => s.units);
   const setUnits = useSettings((s) => s.setUnits);
+  const theme = useSettings((s) => s.theme);
+  const setTheme = useSettings((s) => s.setTheme);
   const load = useSettings((s) => s.load);
   const [message, setMessage] = useState<string | null>(null);
   const storage = useQuery({ queryKey: ['offline-bytes'], queryFn: offlineStorageBytes });
@@ -115,6 +123,11 @@ export default function SettingsScreen() {
           </View>
         </View>
       </View>
+
+      <AppText variant="title" style={styles.heading}>
+        Appearance
+      </AppText>
+      <Segmented options={THEME_OPTIONS} value={theme} onChange={(t) => void setTheme(t)} />
 
       <AppText variant="title" style={styles.heading}>
         Units

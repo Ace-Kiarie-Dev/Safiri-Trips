@@ -82,7 +82,7 @@ export function TripMap({ trip, stops, route }: Props) {
                 lineWidth: 4,
                 lineCap: 'round',
                 lineJoin: 'round',
-                ...(route ? {} : { lineDasharray: [1, 2] }),
+                lineDasharray: route ? [1, 0] : [1, 2],
               }}
             />
           </GeoJSONSource>
@@ -93,7 +93,7 @@ export function TripMap({ trip, stops, route }: Props) {
           </ViewAnnotation>
         ) : null}
         {stops.map((s, i) => (
-          <ViewAnnotation key={s.id} id={`stop-${s.id}`} lngLat={[s.lng, s.lat]}>
+          <ViewAnnotation key={`${i}-${s.id}`} id={`stop-${i}-${s.id}`} lngLat={[s.lng, s.lat]}>
             <MapPin label={String(i + 1)} tone="primary" />
           </ViewAnnotation>
         ))}

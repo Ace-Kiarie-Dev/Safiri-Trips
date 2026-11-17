@@ -1,276 +1,216 @@
-import {
-  Camera,
-  Map as MapView,
-  ViewAnnotation,
-  type CameraRef,
-} from '@maplibre/maplibre-react-native';
-import { useQuery } from '@tanstack/react-query';
-import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
-import { Keyboard, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useMemo, useRef, useState } from 'react';
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 
 import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
-import { EmptyState } from '@/components/EmptyState';
-import { ErrorState } from '@/components/ErrorState';
-import { IconButton } from '@/components/IconButton';
-import { ListRow } from '@/components/ListRow';
-import { MapPin } from '@/components/MapPin';
-import { SearchBar } from '@/components/SearchBar';
-import { SheetSurface } from '@/components/SheetSurface';
-import { Skeleton } from '@/components/Skeleton';
-import { useDebounced } from '@/hooks/useDebounced';
-import { useOnline } from '@/hooks/useOnline';
-import { useTripList } from '@/hooks/useTrips';
-import { KENYA_CENTER, KENYA_ZOOM, MAP_STYLE_URL } from '@/lib/config';
-import { toPlaceParams, type PlaceParams } from '@/lib/placeParams';
-import { searchPlaces } from '@/lib/queries';
-import { STORIES } from '@/lib/stories';
-import { space } from '@/theme/tokens';
+import { Chip } from '@/components/Chip';
+import { Icon } from '@/components/Icon';
+import { Screen } from '@/components/Screen';
+import { StoryPhoto } from '@/components/StoryPhoto';
+import { toPlaceParams } from '@/lib/placeParams';
+import {
+  CATEGORIES,
+  categoryLabel,
+  featuredStories,
+  randomStory,
+  STORIES,
+  type CategoryId,
+  type Story,
+} from '@/lib/stories';
+import { radius, shadow, space } from '@/theme/tokens';
 import { useColors } from '@/theme/useColors';
 
-const SNAP_POINTS = [300, 520, 700];
-const MIN_QUERY = 2;
+const CARD_GAP = space.md;
 
-export default function HomeScreen() {
+export default function DiscoverScreen() {
   const c = useColors();
-  const insets = useSafeAreaInsets();
   const router = useRouter();
-  const online = useOnline();
-  const camera = useRef<CameraRef>(null);
+  const { width } = useWindowDimensions();
+  const cardWidth = Math.min(320, width - space.lg * 2 - 36);
+  const [page, setPage] = useState(0);
+  const [category, setCategory] = useState<CategoryId | 'all'>('all');
+  const list = useRef<FlatList<Story>>(null);
+  const featured = useMemo(() => featuredStories(8), []);
+  const browse = category === 'all' ? STORIES : STORIES.filter((s) => s.category === category);
 
-  const [query, setQuery] = useState('');
-  const [sheetHeight, setSheetHeight] = useState(SNAP_POINTS[0]!);
-  const [selected, setSelected] = useState<PlaceParams | null>(null);
-  const [me, setMe] = useState<[number, number] | null>(null);
-  const [locationNote, setLocationNote] = useState<string | null>(null);
+  const openStory = (s: Story) =>
+    router.push({
+      pathname: '/place',
+      params: toPlaceParams({
+        name: s.name,
+        subtitle: s.region,
+        lat: s.lat,
+        lng: s.lng,
+        slug: s.slug,
+      }),
+    });
 
-  const term = useDebounced(query.trim(), 450);
-  const searching = term.length >= MIN_QUERY;
-  const search = useQuery({
-    queryKey: ['search', term.toLowerCase()],
-    queryFn: () => searchPlaces(term),
-    enabled: searching,
-  });
-  const trips = useTripList();
-
-  const focus = (place: PlaceParams) => {
-    Keyboard.dismiss();
-    setQuery('');
-    setSelected(place);
-    camera.current?.flyTo({ center: [place.lng, place.lat], zoom: 12, duration: 1200 });
-  };
-
-  const nearMe = async () => {
-    setLocationNote(null);
-    try {
-      const { granted } = await Location.requestForegroundPermissionsAsync();
-      if (!granted) {
-        setLocationNote('Location is off. You can still search for any place.');
-        return;
-      }
-      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-      const here: [number, number] = [pos.coords.longitude, pos.coords.latitude];
-      setMe(here);
-      camera.current?.flyTo({ center: here, zoom: 13, duration: 1200 });
-    } catch {
-      setLocationNote('Could not get your location just now.');
-    }
+  const onScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const i = Math.round(e.nativeEvent.contentOffset.x / (cardWidth + CARD_GAP));
+    setPage(Math.max(0, Math.min(featured.length - 1, i)));
   };
 
   return (
-    <View style={[styles.root, { backgroundColor: c.mapLand }]}>
-      <MapView
-        style={styles.root}
-        mapStyle={MAP_STYLE_URL}
-        contentInset={{ top: 0, left: 0, right: 0, bottom: sheetHeight }}
-        logo={false}
-        attribution
-        attributionPosition={{ top: insets.top + 76, right: 12 }}
-        onLongPress={(e) => {
-          const [lng, lat] = e.nativeEvent.lngLat;
-          focus({
-            name: 'Dropped pin',
-            subtitle: `${lat.toFixed(4)}, ${lng.toFixed(4)}`,
-            lat,
-            lng,
-          });
-        }}
-      >
-        <Camera
-          ref={camera}
-          initialViewState={{ center: KENYA_CENTER, zoom: KENYA_ZOOM }}
-          minZoom={4}
-          maxZoom={17}
-        />
-        {STORIES.map((s) => (
-          <ViewAnnotation
-            key={s.slug}
-            id={`story-${s.slug}`}
-            lngLat={[s.lng, s.lat]}
-            onPress={() =>
-              focus({ name: s.name, subtitle: s.region, lat: s.lat, lng: s.lng, slug: s.slug })
-            }
+    <Screen
+      title="Karibu."
+      right={
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Surprise me with a random place"
+          onPress={() => openStory(randomStory())}
+          style={[styles.surprise, { backgroundColor: c.gold }]}
+        >
+          <Icon name="shuffle" size={18} color={c.ink} />
+          <AppText variant="label">Surprise me</AppText>
+        </Pressable>
+      }
+    >
+      <AppText variant="label" tone="muted" style={styles.sub}>
+        Swipe through {STORIES.length} places worth the drive.
+      </AppText>
+
+      <FlatList
+        ref={list}
+        horizontal
+        data={featured}
+        keyExtractor={(s) => s.slug}
+        showsHorizontalScrollIndicator={false}
+        snapToInterval={cardWidth + CARD_GAP}
+        decelerationRate="fast"
+        onMomentumScrollEnd={onScrollEnd}
+        style={styles.carousel}
+        contentContainerStyle={[styles.carouselContent, { paddingRight: space.lg }]}
+        renderItem={({ item: s }) => (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${s.name}. ${s.summary}`}
+            onPress={() => openStory(s)}
+            style={[styles.card, { width: cardWidth, backgroundColor: c.surface }]}
           >
-            <View
-              accessibilityLabel={`Story: ${s.name}`}
-              style={[styles.storyDot, { backgroundColor: c.gold, borderColor: c.surface }]}
-            />
-          </ViewAnnotation>
-        ))}
-        {me ? (
-          <ViewAnnotation id="me" lngLat={me}>
-            <MapPin tone="me" />
-          </ViewAnnotation>
-        ) : null}
-        {selected ? (
-          <ViewAnnotation id="selected" lngLat={[selected.lng, selected.lat]}>
-            <MapPin />
-          </ViewAnnotation>
-        ) : null}
-      </MapView>
-
-      <View style={[styles.search, { top: insets.top + space.md }]}>
-        <View style={styles.searchBar}>
-          <SearchBar value={query} onChangeText={setQuery} />
-        </View>
-        <IconButton
-          raised
-          icon="settings"
-          label="Settings"
-          onPress={() => router.push('/settings')}
-        />
-      </View>
-
-      <View style={[styles.fab, { bottom: sheetHeight + space.lg }]}>
-        <IconButton raised icon="locate" label="Show places near me" onPress={nearMe} />
-      </View>
-
-      <SheetSurface snapPoints={SNAP_POINTS} onVisibleHeight={setSheetHeight}>
-        {searching ? (
-          <>
-            <AppText variant="headline">Results</AppText>
-            {search.isPending ? (
-              <View style={styles.skeletons}>
-                <Skeleton height={48} />
-                <Skeleton height={48} />
-                <Skeleton height={48} />
-              </View>
-            ) : search.isError ? (
-              <ErrorState
-                title={online ? 'Search hit a bump' : 'You are offline'}
-                message={
-                  online
-                    ? 'We could not reach the search service. Try again in a moment.'
-                    : 'Search needs a connection. Your saved trips still work.'
-                }
-                onRetry={() => void search.refetch()}
-              />
-            ) : search.data.length === 0 ? (
-              <EmptyState
-                icon="search"
-                title="Nothing found"
-                message="Try a town, park or landmark name, like Naivasha or Fort Jesus."
-              />
-            ) : (
-              search.data.map((r) => (
-                <ListRow
-                  key={r.id}
-                  icon="pin"
-                  title={r.name}
-                  subtitle={r.subtitle}
-                  onPress={() =>
-                    focus({ name: r.name, subtitle: r.subtitle, lat: r.lat, lng: r.lng })
-                  }
-                />
-              ))
-            )}
-          </>
-        ) : selected ? (
-          <>
-            <View style={styles.selectedHead}>
-              <View style={styles.flex}>
-                <AppText variant="display" tone="primary" numberOfLines={2}>
-                  {selected.name}
-                </AppText>
-                <AppText variant="label" tone="muted" numberOfLines={1}>
-                  {selected.subtitle}
-                </AppText>
-              </View>
-              <IconButton icon="close" label="Clear selection" onPress={() => setSelected(null)} />
+            <View style={styles.photo}>
+              <StoryPhoto slug={s.slug} category={s.category} label={s.name} iconSize={44} />
             </View>
-            <View style={styles.actions}>
-              <Button
-                flex={1}
-                label="Add to trip"
-                icon="plus"
-                onPress={() =>
-                  router.push({ pathname: '/pick-trip', params: toPlaceParams(selected) })
-                }
-              />
-              <Button
-                flex={1}
-                variant="outline"
-                label="Details"
-                onPress={() => router.push({ pathname: '/place', params: toPlaceParams(selected) })}
-              />
-            </View>
-          </>
-        ) : (
-          <>
-            <AppText variant="display" tone="primary">
-              Karibu. Where to next?
-            </AppText>
-            <AppText variant="label" tone="muted" style={styles.sub}>
-              Search a place, or press and hold the map to drop a pin.
-            </AppText>
-            {locationNote ? (
-              <AppText variant="caption" tone="danger" style={styles.note}>
-                {locationNote}
+            <View style={styles.cardBody}>
+              <AppText variant="micro" style={{ color: c.clay }}>
+                {categoryLabel(s.category).toUpperCase()} · {s.region.toUpperCase()}
               </AppText>
-            ) : null}
-            <Button label="Plan a trip" icon="plus" onPress={() => router.push('/trip/new')} />
-            {trips.data && trips.data.length > 0 ? (
-              <View style={styles.recent}>
-                <AppText variant="title">Your trips</AppText>
-                {trips.data.slice(0, 3).map((t) => (
-                  <ListRow
-                    key={t.id}
-                    icon="trips"
-                    title={t.title}
-                    subtitle={`${t.stopCount} ${t.stopCount === 1 ? 'stop' : 'stops'}${t.offlineAt ? ' · saved offline' : ''}`}
-                    onPress={() => router.push({ pathname: '/trip/[id]', params: { id: t.id } })}
-                  />
-                ))}
-              </View>
-            ) : null}
-          </>
+              <AppText variant="display" numberOfLines={1} style={styles.cardTitle}>
+                {s.name}
+              </AppText>
+              <AppText variant="caption" tone="muted" numberOfLines={2}>
+                {s.summary}
+              </AppText>
+            </View>
+          </Pressable>
         )}
-      </SheetSurface>
-    </View>
+      />
+      <View style={styles.dots} accessibilityLabel={`Place ${page + 1} of ${featured.length}`}>
+        {featured.map((s, i) => (
+          <View
+            key={s.slug}
+            style={[
+              styles.dot,
+              i === page ? { width: 22, backgroundColor: c.accent } : { backgroundColor: c.line },
+            ]}
+          />
+        ))}
+      </View>
+
+      <Button label="Plan a trip" icon="plus" onPress={() => router.push('/trip/new')} />
+
+      <AppText variant="micro" tone="muted" style={styles.browseHeading}>
+        BROWSE BY CATEGORY
+      </AppText>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.chipScroll}
+        contentContainerStyle={styles.chips}
+      >
+        <Chip label="All" filled={category === 'all'} onPress={() => setCategory('all')} />
+        {CATEGORIES.map((cat) => (
+          <Chip
+            key={cat.id}
+            label={cat.label}
+            filled={category === cat.id}
+            onPress={() => setCategory(cat.id)}
+          />
+        ))}
+      </ScrollView>
+      <View style={styles.rows}>
+        {browse.map((s) => (
+          <Pressable
+            key={s.slug}
+            accessibilityRole="button"
+            accessibilityLabel={`${s.name}, ${categoryLabel(s.category)}, ${s.region}`}
+            android_ripple={{ color: c.line }}
+            onPress={() => openStory(s)}
+            style={[styles.row, { borderBottomColor: c.line }]}
+          >
+            <View style={styles.thumb}>
+              <StoryPhoto slug={s.slug} category={s.category} label={s.name} iconSize={22} />
+            </View>
+            <View style={styles.rowText}>
+              <AppText variant="title" numberOfLines={1}>
+                {s.name}
+              </AppText>
+              <AppText variant="caption" tone="muted" numberOfLines={1}>
+                {categoryLabel(s.category)} · {s.region}
+              </AppText>
+            </View>
+            <Icon name="chevron" size={18} color={c.muted} />
+          </Pressable>
+        ))}
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  flex: { flex: 1 },
-  search: {
-    position: 'absolute',
-    left: space.lg,
-    right: space.lg,
+  surprise: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space.sm,
+    gap: space.xs,
+    height: 44,
+    paddingHorizontal: space.lg,
+    borderRadius: radius.pill,
+    marginRight: space.sm,
   },
-  searchBar: { flex: 1 },
-  fab: { position: 'absolute', right: space.lg },
-  storyDot: { width: 14, height: 14, borderRadius: 7, borderWidth: 2 },
-  skeletons: { gap: space.sm, marginTop: space.md },
-  selectedHead: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
-  actions: { flexDirection: 'row', gap: space.md, marginTop: space.lg },
-  sub: { marginTop: space.xs, marginBottom: space.lg },
-  note: { marginBottom: space.md },
-  recent: { marginTop: space.xl },
+  sub: { marginBottom: space.md },
+  carousel: { marginHorizontal: -space.lg },
+  carouselContent: { paddingLeft: space.lg, gap: CARD_GAP, paddingBottom: space.sm },
+  card: { borderRadius: radius.lg, overflow: 'hidden', ...shadow.card },
+  photo: { height: 300 },
+  cardBody: { padding: space.lg, gap: 2 },
+  cardTitle: { marginTop: 2 },
+  dots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
+    marginVertical: space.md,
+  },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  browseHeading: { marginTop: space.xl, marginBottom: space.sm, letterSpacing: 1 },
+  chipScroll: { marginHorizontal: -space.lg },
+  chips: { gap: space.sm, paddingHorizontal: space.lg, alignItems: 'center', minHeight: 44 },
+  rows: { marginTop: space.sm },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.md,
+    paddingVertical: space.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  thumb: { width: 56, height: 56, borderRadius: radius.sm, overflow: 'hidden' },
+  rowText: { flex: 1 },
 });

@@ -10,10 +10,11 @@ async function request<S extends z.ZodType>(
   path: string,
   schema: S,
   init?: RequestInit,
+  timeoutMs = TIMEOUT_MS,
 ): Promise<z.infer<S>> {
   if (!API_BASE_URL) throw new ApiError('API base URL is not configured');
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   let res: Response;
   try {
     res = await fetch(`${API_BASE_URL}${path}`, { ...init, signal: controller.signal });
@@ -30,11 +31,12 @@ export function apiGet<S extends z.ZodType>(
   path: string,
   params: Record<string, string | number>,
   schema: S,
+  timeoutMs?: number,
 ) {
   const qs = new URLSearchParams(
     Object.entries(params).map(([k, v]) => [k, String(v)] as [string, string]),
   ).toString();
-  return request(`${path}?${qs}`, schema);
+  return request(`${path}?${qs}`, schema, undefined, timeoutMs);
 }
 
 export function apiPost<S extends z.ZodType>(path: string, body: unknown, schema: S) {

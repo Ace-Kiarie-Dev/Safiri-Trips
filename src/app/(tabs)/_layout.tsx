@@ -7,8 +7,6 @@ import { useOnline } from '@/hooks/useOnline';
 import { useSettings } from '@/state/settings';
 import { useColors } from '@/theme/useColors';
 
-export const unstable_settings = { anchor: 'discover' };
-
 export default function TabsLayout() {
   const c = useColors();
   const online = useOnline();
@@ -20,8 +18,8 @@ export default function TabsLayout() {
     <View style={[styles.root, { backgroundColor: c.bg }]}>
       {online ? null : <OfflineBanner insetTop />}
       <Tabs tabBar={(props) => <TabBar {...props} />} screenOptions={{ headerShown: false }}>
-        <Tabs.Screen name="discover" options={{ title: 'Discover' }} />
-        <Tabs.Screen name="index" options={{ title: 'Plan' }} />
+        <Tabs.Screen name="index" options={{ title: 'Discover' }} />
+        <Tabs.Screen name="plan" options={{ title: 'Plan' }} />
         <Tabs.Screen name="trips" options={{ title: 'Trips' }} />
       </Tabs>
     </View>

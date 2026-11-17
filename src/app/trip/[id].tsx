@@ -17,7 +17,7 @@ import { TripMap } from '@/features/trip/TripMap';
 import { WeatherTab } from '@/features/trip/WeatherTab';
 import { useOnline } from '@/hooks/useOnline';
 import { useDeleteTrip, useStops, useTrip, useTripMutation } from '@/hooks/useTrips';
-import { formatDay, formatDistance, formatDuration } from '@/lib/format';
+import { formatDay, formatDistance, formatDurationShort } from '@/lib/format';
 import { generatePacking } from '@/lib/packing';
 import { fetchRoute, fetchWeather } from '@/lib/queries';
 import { shareTrip, tripAsText } from '@/lib/share';
@@ -190,7 +190,7 @@ export default function TripDetailScreen() {
         />
         <StatPill
           icon="clock"
-          value={route ? formatDuration(route.durationS) : '—'}
+          value={route ? formatDurationShort(route.durationS) : '—'}
           label="Drive time"
         />
         <StatPill
