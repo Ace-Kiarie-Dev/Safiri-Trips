@@ -70,10 +70,8 @@ export function guarded<S extends z.ZodType>(
       const detail = e instanceof Error ? e.message : 'unknown error';
       // Server side log: path and message only, no query text and no coordinates.
       console.error(`${new URL(request.url).pathname} ${detail}`);
-      // TEMPORARY: detail is returned to the caller so failures can be
-      // diagnosed from the smoke test. Revert to a generic message before
-      // release (tracked in docs/RELEASE_CHECKLIST.md).
-      return json({ error: 'Upstream unavailable', detail }, 502);
+      // Clients only ever get a generic message; the detail stays in the server log.
+      return fail(502, 'Upstream unavailable');
     }
   };
 }
