@@ -4,7 +4,7 @@
 **Package:** com.nesture.safiritrips
 **Category:** Travel & Local
 **Contact email:** hello@nesturex.com
-**Privacy policy URL:** https://nesturex.com/safiri-trips/privacy
+**Privacy policy URL:** https://nesturex.com/safiri-trips/privacy (live since 19 Nov 2026)
 
 ## Short description (80 characters max)
 
@@ -41,7 +41,8 @@ Safiri is Swahili for "to travel". Safari njema!
 
 - Does the app collect or share user data? **Yes, minimal.**
 - Data types: **App activity > In-app search history** is the closest fit for search text sent to our proxy. Mark as: collected, not shared, processed ephemerally, not required to be linked to identity, used for App functionality.
-- **Location:** not collected. Device location is read only on the phone for the near me button and is never sent off the device. (If a later version sends it to the proxy, update this answer.)
+- **Location > Approximate location** and **Precise location:** collected, not shared. Optional (only when the user taps "Use my location" for a start point; "Near me" keeps it on the phone). Processed ephemerally: sent to our proxy to work out routes and weather, not stored. Purpose: App functionality. Not linked to identity.
+- Note for the form: place coordinates the user picks by search are also sent to the proxy, but they describe places, not the user, so they are covered by the location answer above only when they come from the device.
 - Data encrypted in transit: **Yes** (HTTPS only).
 - Users can request deletion: **Yes**, in app (Settings > Delete all my data). Nothing is stored server side.
 - No data sold. No data used for advertising.

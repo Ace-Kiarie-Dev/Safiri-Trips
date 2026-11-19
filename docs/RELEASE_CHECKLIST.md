@@ -9,7 +9,7 @@ Status key: [x] done in code, [ ] needs Peter or a real device.
 - [ ] Deploy the proxy: `cd proxy && npx vercel --prod`, then add `ORS_API_KEY` in the Vercel project's environment variables and redeploy
 - [ ] Copy `.env.example` to `.env` and set `EXPO_PUBLIC_API_BASE_URL` to the Vercel URL (no trailing slash)
 - [ ] `npm install`, then `npx eas-cli build -p android --profile development` and install the APK (MapLibre does not run in Expo Go). Rebuild whenever a native module is added; the last native change was react-native-view-shot and expo-sharing for picture sharing.
-- [ ] Host docs/PRIVACY_POLICY.md at https://nesturex.com/safiri-trips/privacy
+- [x] Privacy policy live at https://nesturex.com/safiri-trips/privacy (19 Nov 2026)
 
 ## Security gate (nx-security)
 
