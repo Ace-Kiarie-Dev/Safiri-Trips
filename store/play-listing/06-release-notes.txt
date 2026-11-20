@@ -1,0 +1,1 @@
+First test of Safiri Trips. Plan a trip, try stops on the way, save it offline and tell us what breaks.
